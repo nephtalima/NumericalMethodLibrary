@@ -1,0 +1,378 @@
+ALT 1	☺	White Smiley Face
+ALT 2	☻	Black Smiley Face
+ALT 3	♥	Black Heart Suit
+ALT 4	♦	Black Diamond Suit
+ALT 5	♣	Black Club Suit
+ALT 6	♠	Black Spade Suit
+ALT 7	•	Bullet
+ALT 8	◘	Inverse Bullet
+ALT 9	○	White Circle
+ALT 10	◙	Inverse White Circle
+ALT 11	♂	Male Sign, Mars
+ALT 12	♀	Female Sign, Venus
+ALT 13	♪	Eighth Note, Quaver
+ALT 14	♫	Beamed Eighth Notes, Barred Eighth Notes, Beamed Quavers
+ALT 15	☼	White Sun With Rays
+ALT 16	►	Black Right-Pointing Pointer
+ALT 17	◄	Black Left-Pointing Pointer
+ALT 18	↕	Up Down Arrow
+ALT 19	‼	Double Exclamation Mark
+ALT 20	¶	Pilcrow Sign, Paragraph Sign
+ALT 21	§	Section Sign
+ALT 22	▬	Black Rectangle
+ALT 23	↨	Up Down Arrow With Base
+ALT 24	↑	Upwards Arrow
+ALT 25	↓	Downwards Arrow
+ALT 26	→	Rightwards Arrow, Z Notation Total Function
+ALT 27	←	Leftwards Arrow
+ALT 28	∟	Right Angle
+ALT 29	↔	Left Right Arrow, Z Notation Relation
+ALT 30	▲	Black Up-Pointing Triangle
+ALT 31	▼	Black Down-Pointing Triangle
+ALT 32		Space
+ALT 33	!	Exclamation Mark, Factorial
+ALT 34	“	Quotation Mark
+ALT 35	#	Number Sign, Pound Sign, Hash, Crosshatch, Octothorpe
+ALT 36	$	Dollar Sign, Milréis, Escudo
+ALT 37	%	Percent Sign
+ALT 38	&	Ampersand
+ALT 39	‘	Apostrophe
+ALT 40	(	Left Parenthesis, Opening Parenthesis
+ALT 41	)	Right Parenthesis, Closing Parenthesis
+ALT 42	*	Asterisk, Star
+ALT 43	+	Plus Sign
+ALT 44	,	Comma, Decimal Separator
+ALT 45	–	Hyphen, Minus Sign
+ALT 46	.	Full Stop, Period, Dot, Decimal Point
+ALT 47	/	Solidus, Slash, Forward Slash, Virgule
+ALT 48	0	Digit Zero
+ALT 49	1	Digit One
+ALT 50	2	Digit Two
+ALT 51	3	Digit Three
+ALT 52	4	Digit Four
+ALT 53	5	Digit Five
+ALT 54	6	Digit Six
+ALT 55	7	Digit Seven
+ALT 56	8	Digit Eight
+ALT 57	9	Digit Nine
+ALT 58	:	Colon
+ALT 59	;	Semicolon
+ALT 60	<	Less-Than Sign
+ALT 61	=	Equals Sign
+ALT 62	>	Greater-Than Sign
+ALT 63	?	Question Mark
+ALT 64	@	Commercial At, At Sign
+ALT 65	A	Latin Capital Letter A
+ALT 66	B	Latin Capital Letter B
+ALT 67	C	Latin Capital Letter C
+ALT 68	D	Latin Capital Letter D
+ALT 69	E	Latin Capital Letter E
+ALT 70	F	Latin Capital Letter F
+ALT 71	G	Latin Capital Letter G
+ALT 72	H	Latin Capital Letter H
+ALT 73	I	Latin Capital Letter I
+ALT 74	J	Latin Capital Letter J
+ALT 75	K	Latin Capital Letter K
+ALT 76	L	Latin Capital Letter L
+ALT 77	M	Latin Capital Letter M
+ALT 78	N	Latin Capital Letter N
+ALT 79	O	Latin Capital Letter O
+ALT 80	P	Latin Capital Letter P
+ALT 81	Q	Latin Capital Letter Q
+ALT 82	R	Latin Capital Letter R
+ALT 83	S	Latin Capital Letter S
+ALT 84	T	Latin Capital Letter T
+ALT 85	U	Latin Capital Letter U
+ALT 86	V	Latin Capital Letter V
+ALT 87	W	Latin Capital Letter W
+ALT 88	X	Latin Capital Letter X
+ALT 89	Y	Latin Capital Letter Y
+ALT 90	Z	Latin Capital Letter Z
+ALT 91	[	Left Square Bracket, Opening Square Bracket
+ALT 92	\	Reverse Solidus, Back Slash
+ALT 93	]	Right Square Bracket, Closing Square Bracket
+ALT 94	^	Circumflex Accent
+ALT 95	_	Low Line, Underscore
+ALT 96	`	Grave Accent
+ALT 97	a	Latin Small Letter A
+ALT 98	b	Latin Small Letter B
+ALT 99	c	Latin Small Letter C
+ALT 100	d	Latin Small Letter D
+ALT 101	e	Latin Small Letter E
+ALT 102	f	Latin Small Letter F
+ALT 103	g	Latin Small Letter G
+ALT 104	h	Latin Small Letter H
+ALT 105	i	Latin Small Letter I
+ALT 106	j	Latin Small Letter J
+ALT 107	k	Latin Small Letter K
+ALT 108	l	Latin Small Letter L
+ALT 109	m	Latin Small Letter M
+ALT 110	n	Latin Small Letter N
+ALT 111	o	Latin Small Letter O
+ALT 112	p	Latin Small Letter P
+ALT 113	q	Latin Small Letter Q
+ALT 114	r	Latin Small Letter R
+ALT 115	s	Latin Small Letter S
+ALT 116	t	Latin Small Letter T
+ALT 117	u	Latin Small Letter U
+ALT 118	v	Latin Small Letter V
+ALT 119	w	Latin Small Letter W
+ALT 120	x	Latin Small Letter X
+ALT 121	y	Latin Small Letter Y
+ALT 122	z	Latin Small Letter Z
+ALT 123	{	Left Curly Bracket, Opening Curly Bracket, Left Brace
+ALT 124	|	Vertical Line, Vertical Bar
+ALT 125	}	Right Curly Bracket, Closing Curly Bracket, Right Brace
+ALT 126	~	Tilde
+ALT 127	⌂	House
+ALT 128	Ç	Latin Capital Letter C With Cedilla
+ALT 129	ü	Latin Small Letter U With Diaeresis
+ALT 130	é	Latin Small Letter E With Acute
+ALT 131	â	Latin Small Letter A With Circumflex
+ALT 132	ä	Latin Small Letter A With Diaeresis
+ALT 133	à	Latin Small Letter A With Grave
+ALT 134	å	Latin Small Letter A With Ring Above
+ALT 135	ç	Latin Small Letter C With Cedilla
+ALT 136	ê	Latin Small Letter E With Circumflex
+ALT 137	ë	Latin Small Letter E With Diaeresis
+ALT 138	è	Latin Small Letter E With Grave
+ALT 139	ï	Latin Small Letter I With Diaeresis
+ALT 140	î	Latin Small Letter I With Circumflex
+ALT 141	ì	Latin Small Letter I With Grave
+ALT 142	Ä	Latin Capital Letter A With Diaeresis
+ALT 143	Å	Latin Capital Letter A With Ring Above
+ALT 144	É	Latin Capital Letter E With Acute
+ALT 145	§	Latin Small Letter Ae
+ALT 146	Æ	Latin Capital Letter Ae
+ALT 147	ô	Latin Small Letter O With Circumflex
+ALT 148	ö	Latin Small Letter O With Diaeresis
+ALT 149	ò	Latin Small Letter O With Grave
+ALT 150	û	Latin Small Letter U With Circumflex
+ALT 151	ù	Latin Small Letter U With Grave
+ALT 152	ÿ	Latin Small Letter Y With Diaeresis
+ALT 153	Ö	Latin Capital Letter O With Diaeresis
+ALT 154	Ü	Latin Capital Letter U With Diaeresis
+ALT 155	¢	Cent Sign
+ALT 156	£	Pound Sign, Pound Sterling, Irish Punt, Lira Sign
+ALT 157	¥	Yen Sign, Yuan Sign
+ALT 158	₧	Peseta Sign
+ALT 159	ƒ	Latin Small Letter F With Hook, Florin Currency Symbol, Function Symbol
+ALT 160	á	Latin Small Letter A With Acute
+ALT 161	í	Latin Small Letter I With Acute
+ALT 162	ó	Latin Small Letter O With Acute
+ALT 163	ú	Latin Small Letter U With Acute
+ALT 164	ñ	Latin Small Letter N With Tilde, Small Letter Enye
+ALT 165	Ñ	Latin Capital Letter N With Tilde, Capital Letter Enye
+ALT 166	ª	Feminine Ordinal Indicator
+ALT 167	º	Masculine Ordinal Indicator
+ALT 168	¿	Inverted Question Mark, Turned Question Mark
+ALT 169	⌐	Reversed Not Sign, Beginning Of Line
+ALT 170	¬	Not Sign, Angled Dash
+ALT 171	½	Vulgar Fraction One Half
+ALT 172	¼	Vulgar Fraction One Quarter
+ALT 173	¡	Inverted Exclamation Mark
+ALT 174	«	Left-Pointing Double Angle Quotation Mark, Left Guillemet, Chevrons
+ALT 175	»	Right-Pointing Double Angle Quotation Mark, Right Guillemet
+ALT 176	░	Light Shade
+ALT 177	▒	Medium Shade, Speckles Fill, Dotted Fill
+ALT 178	▓	Dark Shade
+ALT 179	│	Box Drawings Light Vertical
+ALT 180	┤	Box Drawings Light Vertical And Left
+ALT 181	╡	Box Drawings Vertical Single And Left Double
+ALT 182	╢	Box Drawings Vertical Double And Left Single
+ALT 183	╖	Box Drawings Down Double And Left Single
+ALT 184	╕	Box Drawings Down Single And Left Double
+ALT 185	╣	Box Drawings Double Vertical And Left
+ALT 186	║	Box Drawings Double Vertical
+ALT 187	╗	Box Drawings Double Down And Left
+ALT 188	╝	Box Drawings Double Up And Left
+ALT 189	╜	Box Drawings Up Double And Left Single
+ALT 190	╛	Box Drawings Up Single And Left Double
+ALT 191	┐	Box Drawings Light Down And Left
+ALT 192	└	Box Drawings Light Up And Right
+ALT 193	┴	Box Drawings Light Up And Horizontal
+ALT 194	├	Box Drawings Light Down And Horizontal
+ALT 195	├	Box Drawings Light Vertical And Right
+ALT 196	─	Box Drawings Light Horizontal
+ALT 197	┼	Box Drawings Light Vertical And Horizontal
+ALT 198	╞	Box Drawings Vertical Single And Right Double
+ALT 199	╟	Box Drawings Vertical Double And Right Single
+ALT 200	╚	Box Drawings Double Up And Right
+ALT 201	╔	Box Drawings Double Down And Right
+ALT 202	╩	Box Drawings Double Up And Horizontal
+ALT 203	╦	Box Drawings Double Down And Horizontal
+ALT 204	╠	Box Drawings Double Vertical And Right
+ALT 205	═	Box Drawings Double Horizontal
+ALT 206	╬	Box Drawings Double Vertical And Horizontal
+ALT 207	╧	Box Drawings Up Single And Horizontal Double
+ALT 208	╨	Box Drawings Up Double And Horizontal Single
+ALT 209	╤	Box Drawings Down Single And Horizontal Double
+ALT 210	╥	Box Drawings Down Double And Horizontal Single
+ALT 211	╙	Box Drawings Up Double And Right Single
+ALT 212	╘	Box Drawings Up Single And Right Double
+ALT 213	╒	Box Drawings Down Single And Right Double
+ALT 214	╓	Box Drawings Down Double And Right Single
+ALT 215	╫	Box Drawings Vertical Double And Horizontal Single
+ALT 216	╪	Box Drawings Vertical Single And Horizontal Double
+ALT 217	┘	Box Drawings Light Up And Left
+ALT 218	┌	Box Drawings Light Down And Right
+ALT 219	█	Full Block, Solid Block
+ALT 220	▄	Lower Half Block
+ALT 221	▌	Left Half Block
+ALT 222	▐	Right Half Block
+ALT 223	▀	Upper Half Block
+ALT 224	α	Greek Small Letter Alpha
+ALT 225	ß	Latin Small Letter Sharp S, Eszett
+ALT 226	Γ	Greek Capital Letter Gamma
+ALT 227	π	Greek Small Letter Pi
+ALT 228	Σ	Greek Capital Letter Sigma
+ALT 229	σ	Greek Small Letter Sigma
+ALT 230	µ	Micro Sign
+ALT 231	τ	Greek Capital Letter Tau
+ALT 232	Φ	Greek Capital Letter Phi
+ALT 233	Θ	Greek Capital Letter Theta
+ALT 234	Ω	Greek Capital Letter Omega
+ALT 235	δ	Greek Small Letter Delta
+ALT 236	∞	Infinity
+ALT 237	φ	Greek Small Letter Phi
+ALT 238	ε	Greek Small Letter Epsilon
+ALT 239	∩	Intersection
+ALT 240	≡	Identical To
+ALT 241	±	Plus-Minus Sign
+ALT 242	≥	Greater-Than Or Equal To
+ALT 243	≤	Less-Than Or Equal To
+ALT 244	⌠	Top Half Integral
+ALT 245	⌡	Bottom Half Integral
+ALT 246	÷	Division Sign, Obelus
+ALT 247	≈	Almost Equal To, Asymptotic To
+ALT 248	°	Degree Sign
+ALT 249	∙	Bullet Operator
+ALT 250	·	Middle Dot, Interpunct
+ALT 251	√	Square Root, Radical Sign
+ALT 252	ⁿ	Superscript Latin Small Letter N
+ALT 253	²	Superscript Two, Squared
+ALT 254	■	Black Square
+ALT 255		Non-Breaking Space, NBSP
+ALT 0128	€	Euro Sign
+ALT 0130	‚	Single Low-9 Quotation Mark
+ALT 0131	ƒ	Latin Small Letter F With Hook, Florin Currency Symbol, Function
+ALT 0132	„	Double Low-9 Quotation Mark
+ALT 0133	…	Horizontal Ellipsis, Three Dot Leader
+ALT 0134	†	Dagger, Obelisk, Cross
+ALT 0135	‡	Double Dagger, Double Obelisk, Diesis
+ALT 0136	ˆ	Modifier Letter Circumflex Accent
+ALT 0137	‰	Per Mille Sign, Per Thousand
+ALT 0138	Š	Latin Capital Letter S With Caron, S Hacek
+ALT 0139	‹	Single Left-Pointing Angle Quotation Mark, Left Guillemet
+ALT 0140	Œ	Latin Capital Ligature Oe
+ALT 0142	Ž	Latin Capital Letter Z With Caron, Z Hacek
+ALT 0145	‘	Left Single Quotation Mark
+ALT 0146	’	Right Single Quotation Mark
+ALT 0147	“	Left Double Quotation Mark
+ALT 0148	”	Right Double Quotation Mark
+ALT 0149	•	Bullet
+ALT 0150	–	En Dash
+ALT 0151	—	Em Dash
+ALT 0152	˜	Small Tilde
+ALT 0153	™	Trade Mark Sign
+ALT 0154	š	Latin Small Letter S With Caron, S Hacek
+ALT 0155	›	Single Right-Pointing Angle Quotation Mark, Right Guillemet
+ALT 0156	œ	Latin Small Ligature Oe
+ALT 0158	ž	Latin Small Letter Z With Caron, Z Hacek
+ALT 0159	Ÿ	Latin Capital Letter Y With Diaeresis
+ALT 0160		No-Break Space, Non-Breaking Space, Nbsp
+ALT 0161	¡	Inverted Exclamation Mark
+ALT 0162	¢	Cent Sign
+ALT 0163	¥	Pound Sign, Pound Sterling, Irish Punt, Lira Sign
+ALT 0164	¤	Currency Sign
+ALT 0165	¥	Yen Sign, Yuan Sign
+ALT 0166	¦	Broken Bar, Parted Rule
+ALT 0167	§	Section Sign
+ALT 0168	¨	Diaeresis
+ALT 0169	©	Copyright Sign
+ALT 0170	ª	Feminine Ordinal Indicator
+ALT 0171	«	Left-Pointing Double Angle Quotation Mark, Left Guillemet, Chevrons
+ALT 0172	¬	Not Sign, Angled Dash
+ALT 0173	­	Soft Hyphen, Discretionary Hyphen
+ALT 0174	®	Registered Sign
+ALT 0175	¯	Macron, Overline, Overbar
+ALT 0176	°	Degree Sign
+ALT 0177	±	Plus-Minus Sign
+ALT 0178	²	Superscript Two, Squared
+ALT 0179	³	Superscript Three, Cubed
+ALT 0180	´	Acute Accent
+ALT 0181	µ	Micro Sign
+ALT 0182	¶	Pilcrow Sign, Paragraph Sign
+ALT 0183	·	Middle Dot, Midpoint, Georgian Comma, Greek Ano Teleia
+ALT 0184	¸	Cedilla
+ALT 0185	¹	Superscript One
+ALT 0186	º	Masculine Ordinal Indicator
+ALT 0187	»	Right-Pointing Double Angle Quotation Mark, Right Guillemet
+ALT 0188	¼	Vulgar Fraction One Quarter
+ALT 0189	½	Vulgar Fraction One Half
+ALT 0190	¾	Vulgar Fraction Three Quarters
+ALT 0191	¿	Inverted Question Mark, Turned Question Mark
+ALT 0192	À	Latin Capital Letter A With Grave
+ALT 0193	Á	Latin Capital Letter A With Acute
+ALT 0194	Â	Latin Capital Letter A With Circumflex
+ALT 0195	Ã	Latin Capital Letter A With Tilde
+ALT 0196	Ä	Latin Capital Letter A With Diaeresis
+ALT 0197	Å	Latin Capital Letter A With Ring Above
+ALT 0198	Æ	Latin Capital Letter Ae
+ALT 0199	Ç	Latin Capital Letter C With Cedilla
+ALT 0200	È	Latin Capital Letter E With Grave
+ALT 0201	É	Latin Capital Letter E With Acute
+ALT 0202	Ê	Latin Capital Letter E With Circumflex
+ALT 0203	Ë	Latin Capital Letter E With Diaeresis
+ALT 0204	Ì	Latin Capital Letter I With Grave
+ALT 0205	Í	Latin Capital Letter I With Acute
+ALT 0206	Î	Latin Capital Letter I With Circumflex
+ALT 0207	Ï	Latin Capital Letter I With Diaeresis
+ALT 0208	Ð	Latin Capital Letter Eth
+ALT 0209	Ñ	Latin Capital Letter N With Tilde, Capital Letter Enye
+ALT 0210	Ò	Latin Capital Letter O With Grave
+ALT 0211	Ó	Latin Capital Letter O With Acute
+ALT 0212	Ô	Latin Capital Letter O With Circumflex
+ALT 0213	Õ	Latin Capital Letter O With Tilde
+ALT 0214	Ö	Latin Capital Letter O With Diaeresis
+ALT 0215	×	Multiplication Sign, Cartesian Product
+ALT 0216	Ø	Latin Capital Letter O With Stroke
+ALT 0217	Ù	Latin Capital Letter U With Grave
+ALT 0218	Ú	Latin Capital Letter U With Acute
+ALT 0219	Û	Latin Capital Letter U With Circumflex
+ALT 0220	Ü	Latin Capital Letter U With Diaeresis
+ALT 0221	Ý	Latin Capital Letter Y With Acute
+ALT 0222	Þ	Latin Capital Letter Thorn
+ALT 0223	ß	Latin Small Letter Sharp S, Eszett
+ALT 0224	à	Latin Small Letter A With Grave
+ALT 0225	á	Latin Small Letter A With Acute
+ALT 0226	â	Latin Small Letter A With Circumflex
+ALT 0227	ã	Latin Small Letter A With Tilde
+ALT 0228	ä	Latin Small Letter A With Diaeresis
+ALT 0229	å	Latin Small Letter A With Ring Above
+ALT 0230	æ	Latin Small Letter Ae, Ash
+ALT 0231	ç	Latin Small Letter C With Cedilla
+ALT 0232	è	Latin Small Letter E With Grave
+ALT 0233	é	Latin Small Letter E With Acute
+ALT 0234	ê	Latin Small Letter E With Circumflex
+ALT 0235	ë	Latin Small Letter E With Diaeresis
+ALT 0236	ì	Latin Small Letter I With Grave
+ALT 0237	í	Latin Small Letter I With Acute
+ALT 0238	î	Latin Small Letter I With Circumflex
+ALT 0239	ï	Latin Small Letter I With Diaeresis
+ALT 0240	ð	Latin Small Letter Eth
+ALT 0241	ñ	Latin Small Letter N With Tilde, Small Letter Enye
+ALT 0242	ò	Latin Small Letter O With Grave
+ALT 0243	ó	Latin Small Letter O With Acute
+ALT 0244	ô	Latin Small Letter O With Circumflex
+ALT 0245	õ	Latin Small Letter O With Tilde
+ALT 0246	ö	Latin Small Letter O With Diaeresis
+ALT 0247	÷	Division Sign, Obelus
+ALT 0248	ø	Latin Small Letter O With Stroke
+ALT 0249	ù	Latin Small Letter U With Grave
+ALT 0250	ú	Latin Small Letter U With Acute
+ALT 0251	û	Latin Small Letter U With Circumflex
+ALT 0252	ü	Latin Small Letter U With Diaeresis
+ALT 0253	ý	Latin Small Letter Y With Acute
+ALT 0254	þ	Latin Small Letter Thorn
+ALT 0255	ÿ	Latin Small Letter Y With Diaeresis
