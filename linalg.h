@@ -55,6 +55,8 @@ namespace nm{
                 */
                 bool checkIfValid() const;
 
+                void print() const;
+
                 
                 /*
                 *  Checks if the vector is the N-dimensional zero vector.
@@ -132,6 +134,17 @@ namespace nm{
                 vector<N> operator+(vector<N>& other) const;
 
                 /*
+                *  Vector subtraction by another N-dimensional vector.
+                *  Returns the sum of the two vectors.
+                */
+                vector<N> operator-(vector<N>& other) const;
+
+                /*
+                *   Tests if two vectors are equal to each other.
+                */
+                bool operator==(vector<N>& other) const;
+
+                /*
                 *  Returns the dimension of the vector (always N).
                 */
                 std::size_t dimension() const;
@@ -150,6 +163,7 @@ namespace nm{
                  *  Returns the index of the leading entry of the vector.
                  */
                 std::size_t leadingEntryIndex() const;
+
 
         };
 
@@ -277,6 +291,9 @@ namespace nm{
             /** Basic Matrix Operations **/
 
             matrix<M,N> operator+(matrix<M,N>& other) const;
+
+
+            /*matrix multiplication*/
             template <std::size_t K> matrix<M,K> operator*(matrix<N,K>& other) const;
 
             /*
@@ -301,7 +318,7 @@ namespace nm{
             
 
 
-            //void guassJordanElimination(vector<M> b) const;
+            void gaussJordanElimination(vector<M> b) const;
             //double determinant() const;
 
             
