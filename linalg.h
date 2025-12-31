@@ -5,12 +5,22 @@
 namespace nm{
 
 
+    constexpr double globalTolerance {0.001};
+
     /*
      *  Checks if the double is equal to 0. 
      *  Both -0 and +0 evaluate to true.
      *  Returns false if the entry is non-zero, true otherwise.
      */
-    static bool isZero(double entry);
+    //static bool isZero(double entry);
+    static bool isZero(double entry, double tolerance = globalTolerance);
+
+    /*
+     *  Checks if two doubles are equal to each other within a certain tolerance.
+     *  Returns true if they are equal, false otherwise.
+     */
+    static bool isEqual(double a, double b, double tolerance = globalTolerance);
+
 
     /*
      *  Checks the given value to check if it is NaN or infinity as defined
@@ -18,6 +28,11 @@ namespace nm{
      *  Returns false if the value is invalid, and true otherwise.
      */
     static bool checkIfValid(double entry);
+
+    /*
+     *  Prints the sign, exponent, and matissa of a given IEEE 754 Double-Precision Floating-Point number
+     */
+    static void printBitsD(double entry);
 
     namespace linalg{
 
@@ -55,6 +70,9 @@ namespace nm{
                 */
                 bool checkIfValid() const;
 
+                /*
+                *  Prints the vector to the console on a single line.
+                */
                 void print() const;
 
                 
@@ -83,7 +101,7 @@ namespace nm{
                 *  Moreover, if the pointer passed is nullptr or any of the values
                 *  are NaN or infinity, this function will throw std::invalid_exception.
                 */
-                void setValues(double* const entries, std::size_t offset = 0, std::size_t capacity = N);
+                void setValues(double* const entries, std::size_t offset = 0, std::size_t capacity = N); //untested
 
                 /*
                 *  Gets a value from a specified index.
@@ -143,6 +161,8 @@ namespace nm{
                 *   Tests if two vectors are equal to each other.
                 */
                 bool operator==(vector<N>& other) const;
+
+                bool isEqual(vector<N>& other, double tolerance = nm::globalTolerance) const;
 
                 /*
                 *  Returns the dimension of the vector (always N).
@@ -216,7 +236,7 @@ namespace nm{
              *  │ c d │
              *  Note that row1, row2, column1, column2 are 0-based indices.
              */
-            double _square2Determinant(std::size_t row1, std::size_t row2, std::size_t column1, std::size_t column2) const;
+            double _square2Determinant(std::size_t row1, std::size_t row2, std::size_t column1, std::size_t column2) const;  //untested
 
         public:
 
@@ -240,17 +260,17 @@ namespace nm{
              *  - capacity is not equal to M*N
              *  
              */
-            matrix(double* entries, std::size_t capacity, bool columnMajorOrder);
+            matrix(double* entries, std::size_t capacity, bool columnMajorOrder); 
 
             /** Low-level Operations **/
 
-
-            //Returns the value located at the i-th row and j-th column 
             /*
              *  Returns the value located at the i-th row and j-th column.
              * (i and j are 0-based indices)
              */
-            double search(std::size_t i, std::size_t j) const;
+            double search(std::size_t rowIndex, std::size_t columnIndex) const;  //untested
+
+            void setEntry(std::size_t rowIndex, std::size_t columnIndex, double value);   //untested
 
             /*
              *  Prints the matrix to the standard output stream.
@@ -258,43 +278,64 @@ namespace nm{
             void print() const;
 
             /*
+             *  Returns the system (or row) specified by the zero-based index.
+             */
+            vector<N> getSystemByIndex(std::size_t index) const;
+
+            /*
+             *  Returns the system (or row) specified by the zero-based index. Alias of matrix<M,N>::getSystemByIndex
+             */
+            vector<N> getRowByIndex(std::size_t index) const;
+
+            /*
+             *  Returns the variable (or column) specified by the zero-based index.
+             */
+            vector<M> getVariableByIndex(std::size_t index) const;
+            
+            /*
+             *  Returns the system (or row) specified by the zero-based index. Alias of matrix<M,N>::getSystemByIndex
+             */
+            vector<M> getColumnByIndex(std::size_t index) const;
+
+            /*
              *  Converts between row-major and column-major forms.
              *  Automatically called in the constructor and thus
              *  both row-major and column-major arrays are populated.
              */
-            void convert();
+            void convert();  //untested
 
             /*
              *  Checks if all entries are valid.
              *  Returns false if any entries are invalid, true otherwise.
              */
-            bool checkIfValidMatrix() const;
+            bool checkIfValidMatrix() const;  //untested
             
             /*
              *  Checks if the i-th (0-based) row is non-zero.
              *  Returns false if any entries are non-zero, true otherwise.
              */
-            bool isRowEmpty(std::size_t row) const;
+            bool isRowEmpty(std::size_t row) const;  //untested
 
             /*
              *  Checks if the j-th (0-based) column is non-zero.
              *  Returns false if any entries are non-zero, true otherwise.
              */
-            bool isColumnEmpty(std::size_t column) const;
-            double leadingEntry(std::size_t row) const;
-            bool isIdentityMatrix() const;
-            bool isEmptyMatrix() const;
-            bool isElementaryMatrix() const;
+            bool isColumnEmpty(std::size_t column) const;  //untested
+            double leadingEntry(std::size_t row) const; //untested
+            bool isIdentityMatrix() const; //untested
+            //bool isEmptyMatrix() const; //untested
+            //bool isElementaryMatrix() const; //untested
             
             
 
             /** Basic Matrix Operations **/
 
-            matrix<M,N> operator+(matrix<M,N>& other) const;
+            //by default makes row-major matrix
+            matrix<M,N> operator+(matrix<M,N>& other) const; //untested
 
 
             /*matrix multiplication*/
-            template <std::size_t K> matrix<M,K> operator*(matrix<N,K>& other) const;
+            template <std::size_t K> matrix<M,K> operator*(matrix<N,K>& other) const; //untested
 
             /*
              *  Transposes the matrix into an NxM matrix.
@@ -307,19 +348,24 @@ namespace nm{
              *  │ 1 2 │
              *  │ 3 4 │
              */
-            matrix<N,M> operator~() const;
+            matrix<N,M> operator~() const; //untested
+
+
+            bool operator==(matrix<M,N>& other) const; //untested
+
+            bool isEqual(matrix<M,N>& other, double tolerance = nm::globalTolerance) const;
 
             /** Elementary Row Operations **/
 
-            //void swapRows(std::size_t row1, std::size_t row2);
-            //void multiplyRowByScalar(std::size_t row, double scalar);
-            //void addRow(std::size_t targetRow, std::size_t sourceRow, double scalar = 1);
+            void swapRows(std::size_t row1Index, std::size_t row2Index); //untested
+            void multiplyRowByScalar(std::size_t rowIndex, double scalar); //untested
+            void addRow(std::size_t targetRowIndex, std::size_t sourceRowIndex, double scalar = 1); //untested
 
             
 
 
-            void gaussJordanElimination(vector<M> b) const;
-            //double determinant() const;
+            void gaussJordanElimination(vector<M> b) const; //untested
+            //double determinant() const; //untested
 
             
 

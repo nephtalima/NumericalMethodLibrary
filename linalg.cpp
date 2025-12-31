@@ -1,4 +1,6 @@
 #include "linalg.h"
+#include <algorithm>
+#include <cstddef>
 #include <stdexcept>
 #include <iostream>
 #include <cstdint>
@@ -7,8 +9,19 @@
 
 namespace nm{
 
-    bool isZero(double entry){
-        return entry == (double)0;
+
+
+    
+
+    bool isZero(double entry, double tolerance){
+        return isEqual(entry, 0, tolerance);
+    }
+
+    bool isEqual(double a, double b, double tolerance){
+        if(a + tolerance > b && b - tolerance < a){
+            return true;
+        }
+        return false;
     }
 
     bool checkIfValid(double entry){
@@ -90,7 +103,7 @@ namespace nm{
             }
             for(std::size_t i{0}; i < N; ++i){
                 this->_entries[i] = entries[i];
-                if(this->_entries[i] != 0){
+                if(nm::isZero(this->_entries[i]) == false){
                     _density++;
                 }
             }
@@ -148,45 +161,20 @@ namespace nm{
                 throw std::invalid_argument("The pointer passed may not be nullptr.");
             }
 
-            std::size_t density{0};
-            for(std::size_t i{0}; i < capacity; ++i){
-
-                if(nm::checkIfValid(entries[i]) == false){
-                    throw std::invalid_argument("Entry at index " + std::to_string(i) + " (of the supplied array) is NaN or infinity.");
-                }
-                if(nm::isZero(entries[i]) == false){
-                    density++;
-                }
-            }
-            
-            std::size_t subarrayDensity{0};
-            for(std::size_t i{0}; i < capacity; ++i){
-                std::size_t offsettedIndex { i + offset - 1};
-                if(nm::isZero(this->_entries[offsettedIndex]) == false){
-                    subarrayDensity++;
-                }
-                this->_entries[offsettedIndex] = entries[i];
+            std::size_t overlap = std::min(N - offset, capacity);
+            //std::cout << "overlap: " << overlap << "\n";
+            std::size_t subarrayDensity {0};
+            for(std::size_t i{offset}; i < overlap + offset; ++i){
+                std::size_t offsetIndex {i-offset};
+                if(isZero(entries[offsetIndex]) == false) subarrayDensity++;
+                this->_entries[i] = entries[offsetIndex];
             }
 
-            //calculate difference (should be int to avoid underflow)
-            int delta = subarrayDensity - density;
-            _density += delta;
+            //std::cout << "subarray density: " << subarrayDensity << ", _density: " << _density << "\n";
 
-            /*
-            hypothetical:
-            entries: 1, 5, 3, 4, 5
+            _density = N - overlap + subarrayDensity;
+            //std::cout << "subarray density: " << subarrayDensity << ", _density: " << _density << "\n";
 
-            entries is of size 5, this->_entries is of size 8, offset is 3
-            i = 0 -> i + offset - 1 = 2
-
-             1   3   2   1   0   0   7   3
-            [0] [1] [2] [3] [4] [5] [6] [7]
-
-             1   3   1   5   3   4   5   3
-
-            i = 4 -> i + offset - 1 = 4 + 2 = 6
-
-            */
         }
 
         template <std::size_t N> double vector<N>::getValue(std::size_t index) const{
@@ -246,8 +234,12 @@ namespace nm{
         }
 
         template <std::size_t N> bool vector<N>::operator==(vector<N>& other) const{
+            return this->isEqual(other);
+        }
+
+        template <std::size_t N> bool vector<N>::isEqual(vector<N>& other, double tolerance) const {
             for(std::size_t i {0}; i < N; ++i){
-                if(this->_entries[i] != other._entries[i])return false;
+                if(nm::isEqual(this->_entries[i],other._entries[i]) == false)return false;
             }
             return true;
         }
@@ -368,11 +360,35 @@ namespace nm{
             convert();
         }
 
-        template <std::size_t M, std::size_t N> double matrix<M,N>::search(std::size_t i, std::size_t j) const{
+        template <std::size_t M, std::size_t N> double matrix<M,N>::search(std::size_t rowIndex, std::size_t columnIndex) const{
+
+            
+            if(rowIndex >= M){
+                throw std::invalid_argument("Index rowIndex must be strictly less than " + std::to_string(M));
+            }
+            if(columnIndex >= N){
+                throw std::invalid_argument("Index columnIndex must be strictly less than " + std::to_string(N));
+            }
+
             if(this->_columnMajorOrder){
-                return this->_variables[j].getValue(i);
+                return this->_variables[columnIndex].getValue(rowIndex);
             }else{
-                return this->_systems[i].getValue(j);
+                return this->_systems[rowIndex].getValue(columnIndex);
+            }
+        }
+
+        template <std::size_t M, std::size_t N> void matrix<M,N>::setEntry(std::size_t rowIndex, std::size_t columnIndex, double value){
+            if(rowIndex >= M){
+                throw std::invalid_argument("Index rowIndex must be strictly less than " + std::to_string(M));
+            }
+            if(columnIndex >= N){
+                throw std::invalid_argument("Index columnIndex must be strictly less than " + std::to_string(N));
+            }
+
+            if(this->_columnMajorOrder){
+                this->_variables[columnIndex].setValue(value, rowIndex);
+            }else{
+                this->_systems[rowIndex].setValue(value,columnIndex);
             }
         }
 
@@ -400,6 +416,30 @@ namespace nm{
                     std::cout << "\n";
                 }
             }
+        }
+
+
+
+        template <std::size_t M, std::size_t N> vector<N> matrix<M, N>::getSystemByIndex(std::size_t index) const{
+            if(index >= M){
+                throw std::invalid_argument("Index must be strictly less than " + std::to_string(M));
+            }
+            return _systems[index];
+        }
+
+        template <std::size_t M, std::size_t N> vector<N> matrix<M, N>::getRowByIndex(std::size_t index) const{
+            return this->getSystemByIndex(index);
+        }
+
+        template <std::size_t M, std::size_t N> vector<M> matrix<M, N>::getVariableByIndex(std::size_t index) const{
+            if(index >= N){
+                throw std::invalid_argument("Index must be strictly less than " + std::to_string(N));
+            }
+            return _variables[index];
+        }
+
+        template <std::size_t M, std::size_t N> vector<M> matrix<M, N>::getColumnByIndex(std::size_t index) const{
+            return this->getVariableByIndex(index);
         }
 
         template <std::size_t M, std::size_t N> void matrix<M,N>::convert(){
@@ -538,14 +578,15 @@ namespace nm{
         }*/
 
         template <std::size_t M, std::size_t N> matrix<M,N> matrix<M,N>::operator+(matrix<M,N>& other) const{
-            double zeros[M*N]{0};
-            if(other._columnMajorOrder && this->_columnMajorOrder){
-                for(std::size_t i{0}; i < M*N; ++i){
-                    zeros[i] = other._entries[i] + this->_entries[i];
+            double outputArray[M*N]{0};
+            matrix<M,N> output {outputArray, M*N, false};
+            for(std::size_t i{0}; i < M; ++i){
+                for(std::size_t j{0}; j < N; ++j){
+                    output.setEntry(i, j, 
+                        this->search(i, j) + other.search(i, j)
+                    );
                 }
             }
-            matrix<M,N> output {zeros, M*N, true};
-            return output;
         }
         
         template <std::size_t M, std::size_t N> template <std::size_t K> matrix<M,K> matrix<M,N>::operator*(matrix<N,K>& other) const{
@@ -553,13 +594,19 @@ namespace nm{
             //this matrix (A) should be accessed in row-major order
             //other matrix (B) should be accessed in column-major order
             //transpose B -> B^T (now KxN matrix)
-            matrix<K,N> B_transpose = ~other;
+            std::size_t newCapacity{M*K};
+            double newMatrixArray[newCapacity];
+            matrix<K,N> B_transpose { ~other };
+
             //now we can access B in row-major order
-            
-            
+            for(std::size_t i{0}; i < M; ++i){
+                for(std::size_t j{0}; j < K; ++j){
+                    vector<N> system {B_transpose.getSystemByIndex(j)};
+                    newMatrixArray[i * K + j]= this->_systems[i] * system;
+                }
+            }
 
-
-
+            return matrix<M,K>{newMatrixArray, newCapacity, false};
             
 	    }
 
@@ -568,11 +615,119 @@ namespace nm{
             return transpose;
         }
         
+        template <std::size_t M, std::size_t N> bool matrix<M, N>::operator==(matrix<M, N>& other) const{
+            return this->isEqual(other);
+        }
+
+        template <std::size_t M, std::size_t N> bool matrix<M, N>::isEqual(matrix<M,N>& other, double tolerance) const{
+            for(std::size_t i{0}; i < M; ++i){
+                for(std::size_t j{0}; j < N; ++j){
+                    if(nm::isEqual(this->_systems[i][j], other.getSystemByIndex(i).getValue(j), tolerance) == false)return false;
+                }
+            }
+            return true;
+        }
+
+        template <std::size_t M, std::size_t N> void matrix<M, N>::swapRows(std::size_t row1Index, std::size_t row2Index){
+
+            if(row1Index >= M){
+                throw std::invalid_argument("Index row1Index must be strictly less than " + std::to_string(M));
+            }
+            if(row2Index >= M){
+                throw std::invalid_argument("Index row2Index must be strictly less than " + std::to_string(M));
+            }
+            vector<N> system {this->_systems[row1Index]}; //row1 is saved
+            this->_systems[row1Index] = this->_systems[row2Index];
+            this->_systems[row2Index] = system;
+        }
+
+        template <std::size_t M,std::size_t N> void matrix<M, N>::multiplyRowByScalar(std::size_t rowIndex, double scalar){
+            if(rowIndex >= M){
+                throw std::invalid_argument("Index rowIndex must be strictly less than " + std::to_string(M));
+            }
+
+            this->_systems[rowIndex] = this->_systems[rowIndex] * scalar;
+        }
+
+        template <std::size_t M,std::size_t N> void matrix<M, N>::addRow(std::size_t targetRowIndex, std::size_t sourceRowIndex, double scalar){
+            if(targetRowIndex >= M){
+                throw std::invalid_argument("Index targetRowIndex must be strictly less than " + std::to_string(M));
+            }
+            if(sourceRowIndex >= M){
+                throw std::invalid_argument("Index sourceRowIndex must be strictly less than " + std::to_string(M));
+            }
+
+            this->_systems[targetRowIndex] = this->_systems[sourceRowIndex] * scalar + this->_systems[targetRowIndex];
+        }
 
         template <std::size_t M, std::size_t N> void matrix<M,N>::gaussJordanElimination(vector<M> b) const {
 
+            const std::size_t capacity { M*(N+1)};
+            double augmentedSystemArray [capacity] = {0};
+
+            //populate augmented system (populate b vector first)
+            for(std::size_t a{1}; a <= M; ++a){
+                augmentedSystemArray[a*(N+1)-1] = b.getValue(a-1);
+            }
+
+            for(std::size_t a{0}; a < capacity; ++a){
+
+                if((a+1) % (N+1) == 0)continue; //skip the entries with the b vector entries
+                std::size_t row {(a+1) / (N+1)};
+                augmentedSystemArray[a] = this->_systems[row].getValue((a) % (N+1));
+                std::cout << "index " << a << ": " << augmentedSystemArray[a] << ", row: " << row << "\n" ;
+            }
+
+            //don't remove the for loop, the c++ compiler is smart enough to optimize it out :)
+            for(std::size_t a{0}; a<capacity; ++a){
+                std::cout << "index " << a << ": " << augmentedSystemArray[a] << "\n";
+            }
+            matrix<M, N+1> augmentedSystem {augmentedSystemArray, capacity, false }; //row-major by default
+
+            
 
 
+            augmentedSystem.print();
+
+            for(std::size_t j {0}; j < N+1; ++j){
+                //if this column vector has 0 leading entries, skip to the next one
+                if(this->_variables[j].isZeroVector())continue;
+
+                //get the max leading entry
+                std::size_t maxIndex{0};
+                double max{augmentedSystem.getSystemByIndex(0).getValue(j)};
+                for(std::size_t l {0}; l < M; ++l){
+                    double candidate{augmentedSystem.getSystemByIndex(l).getValue(j)};
+                    if(candidate > max) {
+                        max = candidate;
+                        maxIndex = l;
+                    }
+                }
+
+                for(std::size_t i {0}; i < M; ++i){
+                    //swap the rows
+                    augmentedSystem.swapRows(maxIndex,i);
+                    
+                    for(std::size_t k{0}; k < M; ++k){
+                        if(k == i)continue;
+                        
+                        double a_kj = augmentedSystem.getSystemByIndex(k).getValue(j);
+                        double a_ij = augmentedSystem.getSystemByIndex(i).getValue(j);
+                        std::cout << "a_kj: " << a_kj << ", a_ij: " << a_ij << "\n";
+
+                        augmentedSystem.print();
+                        augmentedSystem.addRow(k, i, (a_kj/a_ij)*(-1));
+                        std::cout << "j: " << j << ", i: " << i << ", k: " << k << "\n"; 
+                        augmentedSystem.print();
+                    }
+                    
+                }
+
+            }
+
+            //matrix<M, N+1> augmentedSystem {};
+
+            augmentedSystem.print();
 
         }
 
@@ -587,16 +742,13 @@ bool vectorTests(){
     std::size_t score{0};
     std::size_t numberOfTests = 0;
 
-    double array3[3] = {1,2.5,5};
+    std::cout << "\n――――――――――――――――――――――――――――――――――――――――――――――――――――――――\nSTART VECTOR TESTS.\n――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n";
 
-
-
-    
-    std::cout << "Testing NaN detection against C++ implementation\n";
+    std::cout << "Testing NaN detection against C++ implementation: ";
     numberOfTests++;
-    double num = 0.0/0.0;
+    double nan_number = 0.0/0.0;
     //std::cout << "C++ Built-in: " << std::isnan(num) << ", NM: " << !nm::checkIfValid(num) << "\n";
-    if(std::isnan(num) == !nm::checkIfValid(num)){
+    if(std::isnan(nan_number) == !nm::checkIfValid(nan_number)){
         //std::cout << "Both functions identified the number as not-a-number\n";
         std::cout << "Success!\n";
         score++;
@@ -605,11 +757,11 @@ bool vectorTests(){
     }
 
 
-
-    std::cout << "Testing +infinity detection:\n";
+    
+    std::cout << "Testing +infinity detection: ";
     numberOfTests++;
-    num = 1.0/0.0;
-    if(!nm::checkIfValid(num)){
+    double positive_infinity {1.0/0.0};
+    if(!nm::checkIfValid(positive_infinity)){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -618,35 +770,45 @@ bool vectorTests(){
 
 
 
-    std::cout << "Testing -infinity detection:\n";
+    std::cout << "Testing -infinity detection: ";
     numberOfTests++;
-    num = 1.0/(-0.0);
-    if(!nm::checkIfValid(num)){
+    double negative_infinity {-1.0/0.0};
+    if(!nm::checkIfValid(negative_infinity)){
         std::cout << "Success!\n";
         score++;
     }else{
         std::cout << "Failure\n";
     }
 
+    //Usual vector array
+    double threeDimensionalVectorArray1 [3] = {1,2.5,6};
+
+    //Vector array with density of 2, with zero in the 0th position
+    double threeDimensionalVectorArray2 [3] = {0 , 4, 3.5};
+
+    double negativeThreeDimensionalVectorArray1 [3] = {-1, -2.5, -6};
+    double threeDimensionalZeroVectorArray [3] = {0,0,0};
 
 
-    std::cout << "Testing correct array size\n";
+    std::cout << "Testing correct array size: ";
     numberOfTests++;
     try{
-        nm::linalg::vector<3> v301{array3, 3};
+        nm::linalg::vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 3};
         std::cout << "Success!";
         score++;
     }catch(std::invalid_argument message){
+        std::cout << "Failure\n";
         std::cout << message.what();
     }
     std::cout << "\n";
 
 
 
-    std::cout << "Testing incorrect declared array size\n";
+    std::cout << "Testing incorrect declared array size: ";
     numberOfTests++;
     try{
-        nm::linalg::vector<3> v302{array3, 4};
+        nm::linalg::vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 4};
+        std::cout << "Failure\n";
     }catch(std::invalid_argument message){
         std::cout << "Success!\n";
         std::cout << message.what();
@@ -656,11 +818,10 @@ bool vectorTests(){
 
 
 
-    std::cout << "Testing zero vector detection:\n";
+    std::cout << "Testing zero vector detection: ";
     numberOfTests++;
-    double v3entries1[3] = {0,0,0};
-    nm::linalg::vector<3> zv301 {v3entries1, 3};
-    if(zv301.isZeroVector()){
+    nm::linalg::vector<3> zeroVector {threeDimensionalZeroVectorArray, 3};
+    if(zeroVector.isZeroVector()){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -669,11 +830,11 @@ bool vectorTests(){
 
 
 
-    std::cout << "Testing vector equality:\n";
+    std::cout << "Testing vector equality: ";
     numberOfTests++;
     double v3entries2[3] = {2,3,4};
-    nm::linalg::vector<3> zv302 {v3entries2, 3};
-    if(zv302 == zv302){
+    nm::linalg::vector<3> equalTestVector {threeDimensionalVectorArray1, 3};
+    if(equalTestVector == equalTestVector){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -681,13 +842,55 @@ bool vectorTests(){
     }
     
 
-
-
-    std::cout << "Testing vector subtraction (additive inverse property, uses zero vector detection):\n";
+    std::cout << "Testing scalar multiplication (uses zero vector detection): ";
     numberOfTests++;
-    double v3entries3[3] = {3,3,3};
-    nm::linalg::vector<3> zv303 {v3entries3, 3};
-    if((zv303 - zv303).isZeroVector()){
+    nm::linalg::vector<3> scalarMultiplicationTestVector {threeDimensionalVectorArray1, 3};
+    if((scalarMultiplicationTestVector*0).isZeroVector()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing vector subtraction 1 (additive inverse property, uses zero vector detection): ";
+    numberOfTests++;
+    nm::linalg::vector<3> additiveInverseTestVector1 {threeDimensionalVectorArray1, 3};
+    if((additiveInverseTestVector1 - additiveInverseTestVector1).isZeroVector()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing vector subtraction 2: ";
+    numberOfTests++;
+    nm::linalg::vector<3> additiveInverseTestVector2 {negativeThreeDimensionalVectorArray1, 3};
+    if((zeroVector - additiveInverseTestVector1) == additiveInverseTestVector2){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing vector addition. (Depends on scalar multiplication): ";
+    numberOfTests++;
+    nm::linalg::vector<3> additiveTestVector {threeDimensionalVectorArray1, 3};
+    nm::linalg::vector<3> additiveTestVectorScaledBy2 = additiveTestVector*2;
+    if((additiveTestVector + additiveTestVector) == additiveTestVectorScaledBy2){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing dot product: ";
+    numberOfTests++;
+    double dotProductTestArray1[3] = {0,0,1};
+    double dotProductTestArray2[3] = {1,0,0};
+    nm::linalg::vector<3> dotProductTestVector1 {dotProductTestArray1,3};
+    nm::linalg::vector<3> dotProductTestVector2 {dotProductTestArray2, 3};
+    if((dotProductTestVector1 * dotProductTestVector2) == 0){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -696,11 +899,10 @@ bool vectorTests(){
 
 
 
-    std::cout << "Testing scalar multiplication (uses zero vector detection):\n";
+    std::cout << "Testing norm (depends on dot product): ";
     numberOfTests++;
-    double v3entries4[3] = {3,3,3};
-    nm::linalg::vector<3> v304 {v3entries4, 3};
-    if((v304*0).isZeroVector()){
+    nm::linalg::vector<3> normTestVector {threeDimensionalVectorArray1, 3};
+    if(normTestVector.norm2()*normTestVector.norm2() == normTestVector*normTestVector){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -709,127 +911,152 @@ bool vectorTests(){
 
 
 
-    std::cout << "Testing dot product:\n";
+    std::cout << "Leading entry test: ";
     numberOfTests++;
-    double v3entries5[3] = {0,0,1};
-    double v3entries6[3] = {1,0,0};
-    nm::linalg::vector<3> v305 {v3entries5,3};
-    nm::linalg::vector<3> v306 {v3entries6, 3};
-    if((v305 * v306) == 0){
+    nm::linalg::vector<3> leadingEntryValueTestVector { threeDimensionalVectorArray2, 3};
+    if(leadingEntryValueTestVector.leadingEntry() == 4){
         std::cout << "Success!\n";
         score++;
     }else{
-        std::cout << "Failure";
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Leading entry index test: ";
+    numberOfTests++;
+    nm::linalg::vector<3> leadingEntryValueIndexVector { threeDimensionalVectorArray2, 3};
+    if(leadingEntryValueIndexVector.leadingEntryIndex() == 1){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing set value: ";
+    numberOfTests++;
+    double setValueVectorArray1[3] = {0,2,0};
+    double setValueVectorArray2[3] = {0,0,0};
+    nm::linalg::vector<3> setValueVector1 {setValueVectorArray1, 3};
+    nm::linalg::vector<3> setValueVector2 {setValueVectorArray2, 3};
+    setValueVector2.setValue(2, 1);
+    if ((setValueVector1 - setValueVector2).isZeroVector()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+    std::cout << "Testing set value density: ";
+    numberOfTests++;
+    if(setValueVector1.getDensity() == setValueVector2.getDensity() && setValueVector1.getDensity() == 1){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing set values: ";
+    numberOfTests++;
+
+    double getsetValuesVectorArray1[3] = {4,0,1};
+    double getsetValuesVectorArray2[3] = {1,2,3};
+    double getsetValuesVectorArray3[3] = {4,1,2};
+    //this vector gets changed
+    nm::linalg::vector<3> getsetValuesVector1 {getsetValuesVectorArray1, 3};
+    nm::linalg::vector<3> getsetValuesVector2 {getsetValuesVectorArray2, 3};
+    nm::linalg::vector<3> getsetValuesVector3 {getsetValuesVectorArray3, 3};
+    std::size_t sv_offset{1};
+    getsetValuesVector1.setValues(getsetValuesVectorArray2, sv_offset, 3);
+
+    if(getsetValuesVector1.getValue(sv_offset) == 1 && getsetValuesVector1 == getsetValuesVector3){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+    //setValuesVector1.print();
+    //setValuesVector2.print();
+    //setValuesVector3.print();
+    //std::cout << setValuesVector1.getDensity() << ", " << setValuesVector2.getDensity() << ", " << setValuesVector3.getDensity() << "\n"; 
+
+
+    std::cout << "Testing set values density: ";
+    numberOfTests++;
+    if(getsetValuesVector1.getDensity() == getsetValuesVector3.getDensity()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing get value: ";
+    numberOfTests++;
+    std::size_t gv_index {0};
+    //std::cout << setValuesVector1.getValue(gv_index) << " " << setValuesVectorArray1[gv_index] << "\n";
+    if(getsetValuesVector1.getValue(gv_index) == getsetValuesVectorArray1[gv_index]){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing get values: ";
+    numberOfTests++;
+    std::size_t getValueCounter {0};
+    for(std::size_t i {0}; i < 3; ++i){
+        if(getsetValuesVector2.getValues()[i] == getsetValuesVectorArray2[i]) getValueCounter++;
+    }
+    if(getValueCounter == 3){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing get density: ";
+    numberOfTests++;
+    double densityArray [3] = {4,0,2};
+    nm::linalg::vector<3> getDensityTest {densityArray, 3};
+    if(getDensityTest.getDensity() == 2){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing get density normalized: ";
+    numberOfTests++;
+    nm::linalg::vector<3> getDensityNormalizedTest {densityArray, 3};
+    if(nm::isEqual(getDensityNormalizedTest.getDensityNormalized(),(double)2/(double)3, nm::globalTolerance)){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing get dimension: ";
+    numberOfTests++;
+    double dimensionTestVectorArray[6] = {0,0,0,0,0,4};
+    nm::linalg::vector<6> dimensionTestVector{dimensionTestVectorArray, 6};
+    if(dimensionTestVector.dimension() == 6){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
     }
 
 
 
-    std::cout << "Testing norm (depends on dot product):\n";
-    numberOfTests++;
-    double v3entries7[3] = {2,5,3};
-    nm::linalg::vector<3> v307 {v3entries7, 3};
-    if(v307.norm2()*v307.norm2() == v307*v307){
-        std::cout << "Success!\n";
-        score++;
-    }else{
-        std::cout << "Failure";
-    }
-
-
-
-    std::cout << "Leading entry test:\n";
-    numberOfTests++;
-    double v3entries8[3] = {0,3,2};
-    nm::linalg::vector<3> v308 { v3entries8, 3};
-    if(v308.leadingEntry() == 3){
-        std::cout << "Success!\n";
-        score++;
-    }else{
-        std::cout << "Failure";
-    }
-
-
-
-    std::cout << "Leading entry index test:\n";
-    numberOfTests++;
-    double v3entries9[3] = {0,3,2};
-    nm::linalg::vector<3> v309 { v3entries9, 3};
-    if(v309.leadingEntryIndex() == 1){
-        std::cout << "Success!\n";
-        score++;
-    }else{
-        std::cout << "Failure";
-    }
-
-
-
-    
-
-
-
-    std::cout << "Testing set value:\n";
-    numberOfTests++;
-    double v3entries19[3] = {0,2,0};
-    double v3entries20[3] = {0,0,0};
-    nm::linalg::vector<3> sv31 {v3entries19, 3};
-    nm::linalg::vector<3> zv320 {v3entries20, 3};
-    zv320.setValue(2, 1);
-    if ((zv301 - zv320).isZeroVector()){
-        std::cout << "Success!\n";
-        score++;
-    }else{
-        std::cout << "Failure";
-    }
-
-
-
-    //std::cout << "Testing "
-
-
+    std::cout << "\n――――――――――――――――――――――――――――――――――――――――――――――――――――――――\nEND VECTOR TESTS.\n――――――――――――――――――――――――――――――――――――――――――――――――――――――――\n";
 
     return score == numberOfTests;
 
-     //vectorTests();
-    /*
-    int blah{0};
-    //std::cin >> blah;
-    double entries[12] {1,2,3,4,5,6,7,8,9,10,11,12};
-    nm::linalg::matrix<3,4> ma {entries, 12, (blah == 0 ? true : false)};
-    ma.print();
-    std::cout << "\n";
-    nm::linalg::matrix<4,3> tr {~ma};
-    tr.print();
-    std::size_t i{0}; std::size_t j{0};
+}
 
-    ma.convert();
-*/
-/*
-    double entries1 [12] {1,2,3,4,5,6,7,8,9,10,11,12};
-    double entries2 [12] {12,11,10,9,8,4,6,5,4,3,2,1};
-    double zeros [12] {0};
-    /*
-    nm::linalg::matrix<3,4> ma1 {entries1, 12, true};
-    nm::linalg::matrix<3,4> ma2 {entries2, 12, true};
-    nm::linalg::matrix<3,4> sum {zeros, 12, true};
-    sum = ma1 + ma2;
-    sum.print();*/
-    /*
-
-    double entries3 [3] {1,2,3};
-    nm::linalg::vector<3> initial {entries3, 3};
-    nm::linalg::vector<3> final {initial*3};
-
-    for(std::size_t i{0}; i < 3; ++i){
-        std::cout << "init dim " << i << ": " << initial.getValue(i) << ", final dim " << i << ": " << final.getValue(i) << "\n"; 
-    }
-    //initial*final;
-    std::cout << "dot product: " << initial*final << ", vector sum: [ " << (initial+final).getValue(0) << " " << (initial+final).getValue(1) << " " << (initial+final).getValue(2) << " ]\n";
-    std::cout << "dimension of init: " << initial.dimension() << ", 2-norm of initial: " << initial.norm2() << ", 2-norm of zero vector " << (nm::linalg::vector<12>{zeros, 12}).norm2() << ", norm of [1,2,3,4,5,6,7,8,9,10,11,12] " << (nm::linalg::vector<12>{entries1, 12}).norm2() << "\n";
-    //std::cerr << "pingas\n";
-
-    nm::linalg::matrix<3,4> ma3 {entries1, 12, true};
-
-    std::cout << sizeof(ma3) << "\n";*/
+bool matrixTests(){
+    std::size_t score {0};
+    std::size_t numberOfTests {0};
+    return false;
 }
 
 void ece206mobius1helper(){
@@ -873,12 +1100,46 @@ void ece206mobius1helper(){
 
 int main(){
 
-   
+    
 
-    vectorTests();
-    nm::printBitsD(1000.000000045);
-    nm::printBitsD(1.0/0.0);
-    nm::printBitsD(1.0/(-0.0));
+    std::cout << vectorTests() << "\n";
+
+    double ab [2] = {0.0002, 0.0005};
+    nm::linalg::vector<2> abV {ab, 2};
+    std::cout << "is abV a zero vector? " << abV.isZeroVector() << "\n";
+    double tolerance = nm::globalTolerance;
+    std::cout << "Testing if " << ab[0] << " and " << ab[1] << " are equal within a tolerance " << tolerance << "\n" << (nm::isEqual(ab[0], ab[1], tolerance) ? "true" : "false") << "\n";
+
+    //std::size_t l{static_cast<std::size_t>((1-2))};
+    //std::cout << l + 2 << "\n";
+
+    //nm::printBitsD(1000.000000045);
+    //nm::printBitsD(1.0/0.0);
+    //nm::printBitsD(1.0/(-0.0));
+
+    /*
+    double arrayA [12] {1,2,3,4,5,6,7,8,9,10,11,12};
+    double arrayB [8] {1,2,3,4,5,6,7,8};
+    nm::linalg::matrix<3, 4> A {arrayA, 12, false};
+    nm::linalg::matrix<4, 2> B {arrayB, 8, false};
+    nm::linalg::matrix<3,2> C = A*B;
+    A.print();
+    B.print();
+    C.print();
+
+    B.print();
+    B.multiplyRowByScalar(0, 2);
+    B.print();
+    */
+    double arrayA1 [9] {1,2,3,4,5,6,7,8,9};
+    double arrayV1 [3] {1,2,3};
+    nm::linalg::matrix<3, 3> A1 {arrayA1, 9, false};
+    nm::linalg::vector<3> V1 {arrayV1, 3};
+    A1.gaussJordanElimination(V1);
+
+
+
+
 
 	std::cout << "sizeof of std::size_t: " << sizeof(std::size_t) << "\n";
 	std::cout << "sizeof of char: " << sizeof(char) << ", sizeof of float: " << sizeof(float) << ", sizeof of double: " << sizeof(double) << "\n";
