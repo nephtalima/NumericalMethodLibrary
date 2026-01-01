@@ -61,7 +61,7 @@ namespace nm{
                 *  If entries is nullptr, the vector will be a zero-vector (i.e. all
                 *  all entries are 0).
                 */
-                vector(double* const entries, std::size_t capacity);
+                vector(double* const entries, std::size_t capacity, double tolerance = globalTolerance);
 
                 /*
                 *  Checks the entire vector to check if any values are NaN or infinity
@@ -89,7 +89,7 @@ namespace nm{
                 *  If the entry is invalid, no data is written and this function
                 *  throws std::invalid_exception.
                 */
-                void setValue(double entry, std::size_t index);
+                void setValue(double entry, std::size_t index, double tolerance = globalTolerance);
 
                 /*
                 *  Sets entries with an array full of values, where offset
@@ -101,7 +101,7 @@ namespace nm{
                 *  Moreover, if the pointer passed is nullptr or any of the values
                 *  are NaN or infinity, this function will throw std::invalid_exception.
                 */
-                void setValues(double* const entries, std::size_t offset = 0, std::size_t capacity = N); //untested
+                void setValues(double* const entries, std::size_t offset = 0, std::size_t capacity = N, double tolerance = globalTolerance);
 
                 /*
                 *  Gets a value from a specified index.
@@ -162,6 +162,14 @@ namespace nm{
                 */
                 bool operator==(vector<N>& other) const;
 
+                /*
+                *   Tests if two vectors are not equal to each other.
+                */
+                bool operator!=(vector<N>& other) const;
+
+                /*
+                *   Tests if two vectors are equal to each other, with a specified tolerance.
+                */
                 bool isEqual(vector<N>& other, double tolerance = nm::globalTolerance) const;
 
                 /*
@@ -237,6 +245,8 @@ namespace nm{
              *  Note that row1, row2, column1, column2 are 0-based indices.
              */
             double _square2Determinant(std::size_t row1, std::size_t row2, std::size_t column1, std::size_t column2) const;  //untested
+
+            void calculateDensity() const;
 
         public:
 
