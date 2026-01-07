@@ -276,11 +276,15 @@ namespace nm{
 
             /*
              *  Returns the value located at the i-th row and j-th column.
-             * (i and j are 0-based indices)
+             *  (i and j are 0-based indices)
              */
-            double search(std::size_t rowIndex, std::size_t columnIndex) const;  //untested
+            double search(std::size_t rowIndex, std::size_t columnIndex) const;
 
-            void setEntry(std::size_t rowIndex, std::size_t columnIndex, double value);   //untested
+            /*
+             *  Sets the value located at the i-th row and j-th column.
+             *  (i and j are 0-based indices)
+             */
+            void setEntry(std::size_t rowIndex, std::size_t columnIndex, double value);
 
             /*
              *  Prints the matrix to the standard output stream.
@@ -309,10 +313,14 @@ namespace nm{
 
             /*
              *  Converts between row-major and column-major forms.
-             *  Automatically called in the constructor and thus
-             *  both row-major and column-major arrays are populated.
+             *  Automatically called in the constructor.
+             *  Overwrites the other form, i.e. if the matrix is column-major, the row-major systems are overwritten.
              */
             void convert();  //untested
+
+
+            //force converts from !columnMajorOrder to columnMajorOrder
+            void convert(bool columnMajorOrder);
 
             /*
              *  Checks if all entries are valid.
@@ -344,6 +352,8 @@ namespace nm{
             matrix<M,N> operator+(matrix<M,N>& other) const; //untested
 
 
+            matrix<M,N> operator*(double scalar) const; //untested
+
             /*matrix multiplication*/
             template <std::size_t K> matrix<M,K> operator*(matrix<N,K>& other) const; //untested
 
@@ -363,7 +373,9 @@ namespace nm{
 
             bool operator==(matrix<M,N>& other) const; //untested
 
-            bool isEqual(matrix<M,N>& other, double tolerance = nm::globalTolerance) const;
+            bool operator!=(matrix<M,N>& other) const; //untested
+
+            bool isEqual(matrix<M,N>& other, double tolerance = nm::globalTolerance) const; //untested
 
             /** Elementary Row Operations **/
 
@@ -384,3 +396,37 @@ namespace nm{
 
     }
 }
+    // 1 x N matrix test
+    // M x 1 matrix test
+    // 2 x 2 matrix, CM vs RM test
+    // 3 x 3 matrix, CM vs RM test
+    // 1 x N matrix density test
+    // M x 1 matrix density test
+    // 2 x 2 matrix density test, CM vs RM
+    // 3 x 3 matrix density test, CM vs RM
+    // 1 x 1 search test
+    // 2 x 2 search test
+    // 2 x 2 setEntry test
+    // 3 x 3 setEntry test
+    // 1 x 1 convert test
+    // 2 x 2 convert test
+    // 3 x 3 convert test
+    // 3 x 2 convert test
+    // 2 x 3 convert test
+    // 4 x 2 convert test
+    // checkIfValidMatrix test
+    // 3 x 3 isRowEmpty
+    // 3 x 3 isColumnEmpty
+    // 3 x 3 leadingEntryTest (use REF)
+    // 2 x 2 isIdentityMatrix test
+    // 3 x 3 isIdentityMatrix test
+    // 3 x 3 scalar multiplication test
+    // 3 x 3 matrix addition test 1 (additive inverse)
+    // 3 x 3 matrix addition test 2 ()
+    // 3 x 4 matrix multiplied by 4 x 2 matrix test
+    // 3 x 3 matrix transpose test
+    // 4 x 3 -> 3 x 4 matrix transpose test
+    // 3 x 3 matrix equality test
+    // 3 x 3 swapRows test
+    // 3 x 3 multiplyRowByScalar test
+    // 3 x 3 addRow test
