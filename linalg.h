@@ -10,6 +10,7 @@ namespace nm{
     /*
      *  Checks if the double is equal to 0. 
      *  Both -0 and +0 evaluate to true.
+     *  Throws std::invalid_exception if any of the passed arguments are positive infinity, negative infinity, or NaN.
      *  Returns false if the entry is non-zero, true otherwise.
      */
     //static bool isZero(double entry);
@@ -17,6 +18,7 @@ namespace nm{
 
     /*
      *  Checks if two doubles are equal to each other within a certain tolerance.
+     *  Throws std::invalid_exception if any of the passed arguments are positive infinity, negative infinity, or NaN.
      *  Returns true if they are equal, false otherwise.
      */
     static bool isEqual(double a, double b, double tolerance = globalTolerance);

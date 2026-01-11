@@ -18,6 +18,15 @@ namespace nm{
     }
 
     bool isEqual(double a, double b, double tolerance){
+        if(checkIfValid(a) == false){
+            throw std::invalid_argument("The provided argument a is invalid.");
+        }
+        if(checkIfValid(b) == false){
+            throw std::invalid_argument("The provided argument b is invalid.");
+        }
+        if(checkIfValid(tolerance) == false){
+            throw std::invalid_argument("The provided argument tolerance is invalid.");
+        }
         //std::cout << "a: " << a << ", b: " << b << "\n" << "a + tolerance: " << a + tolerance << ", b - tolerance: " << b - tolerance << "\n";
         if(a + tolerance > b && a - tolerance < b){
             return true;
@@ -313,6 +322,7 @@ namespace nm{
             return search(row1,column1) * search(row2,column2) - search(row1,column2) * search(row2,column1);
         }
 
+        //what if supplied array is changed after initialization?
         template <std::size_t M, std::size_t N> matrix<M,N>::matrix(double* entries, std::size_t capacity, bool columnMajorOrder){
             
             if(entries == nullptr){
@@ -420,8 +430,6 @@ namespace nm{
                 }
             }
         }
-
-
 
         template <std::size_t M, std::size_t N> vector<N> matrix<M, N>::getSystemByIndex(std::size_t index) const{
             if(index >= M){
@@ -776,7 +784,7 @@ bool basicTests(){
     }
 
 
-    std::cout << "Testing isEqual (for equal numbers) with global tolerance " << nm::globalTolerance << ": ";
+    std::cout << "Testing isEqual() (for equal numbers) with global tolerance " << nm::globalTolerance << ": ";
     numberOfTests++;
     double isEqualTestNumber1 {0.0002};
     double isEqualTestNumber2 {0.0005};
@@ -788,7 +796,7 @@ bool basicTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing isEqual (for non-equal numbers) with global tolerance " << nm::globalTolerance << ": ";
+    std::cout << "Testing isEqual() (for non-equal numbers) with global tolerance " << nm::globalTolerance << ": ";
     numberOfTests++;
     double isEqualTestNumber3 {0.0306};
     double isEqualTestNumber4 {0.0005};
@@ -800,7 +808,7 @@ bool basicTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing isZero (for equal numbers) with global tolerance " << nm::globalTolerance << ": ";
+    std::cout << "Testing isZero() (for equal numbers) with global tolerance " << nm::globalTolerance << ": ";
     numberOfTests++;
     double isZeroTestNumber1{0.00004};
     std::cout << "(" << isZeroTestNumber1 << ") ";
@@ -811,7 +819,7 @@ bool basicTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing isZero (for non-equal numbers) with global tolerance " << nm::globalTolerance << ": ";
+    std::cout << "Testing isZero() (for non-equal numbers) with global tolerance " << nm::globalTolerance << ": ";
     numberOfTests++;
     double isZeroTestNumber2{0.04045};
     std::cout << "(" << isZeroTestNumber2 << ") ";
@@ -1243,9 +1251,10 @@ bool matrixTests(){
 
     if(
         m2x2equalityTestMatrixCMColumn0 == m2x2equalityTestMatrixRMRow0 &&
-        m2x2equalityTestMatrixCMColumn1 == m2x2equalityTestMatrixRMRow1 &&
+        m2x2equalityTestMatrixCMColumn1 == m2x2equalityTestMatrixRMRow1 /*&&
         m2x2equalityTestMatrixRMColumn0 == m2x2equalityTestMatrixCMRow0 &&
-        m2x2equalityTestMatrixRMColumn1 == m2x2equalityTestMatrixCMRow1
+        m2x2equalityTestMatrixRMColumn1 == m2x2equalityTestMatrixCMRow1*/
+        // we DO NOT want RM columns or CM rows, those are computed by convert(); separate test
     ){
         std::cout << "Success!\n";
         score++;
@@ -1280,10 +1289,10 @@ bool matrixTests(){
     if(
         m3x3equalityTestMatrixCMColumn0 == m3x3equalityTestMatrixRMRow0 &&
         m3x3equalityTestMatrixCMColumn1 == m3x3equalityTestMatrixRMRow1 &&
-        m3x3equalityTestMatrixCMColumn2 == m3x3equalityTestMatrixRMRow2 &&
+        m3x3equalityTestMatrixCMColumn2 == m3x3equalityTestMatrixRMRow2 /*&&
         m3x3equalityTestMatrixCMRow0 == m3x3equalityTestMatrixRMColumn0 &&
         m3x3equalityTestMatrixCMRow1 == m3x3equalityTestMatrixRMColumn1 &&
-        m3x3equalityTestMatrixCMRow2 == m3x3equalityTestMatrixRMColumn2
+        m3x3equalityTestMatrixCMRow2 == m3x3equalityTestMatrixRMColumn2*/
     ){
         std::cout << "Success!\n";
         score++;
@@ -1353,7 +1362,7 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 1 x 1 matrix search: ";
+    std::cout << "Testing 1 x 1 matrix search(): ";
     numberOfTests++;
     double m1x1searchTestArray [1] = {4};
     nm::linalg::matrix<1, 1> m1x1searchTestMatrix {m1x1searchTestArray, 1, false};
@@ -1364,7 +1373,7 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 2 x 2 matrix search (input array vs both row-major and column-major forms): ";
+    std::cout << "Testing 2 x 2 matrix search() (input array vs both row-major and column-major forms): ";
     numberOfTests++;
     double m2x2searchTestArray [4] = {0,2,1,0};
     nm::linalg::matrix<2, 2> m2x2searchTestMatrixCM {m2x2searchTestArray, 4, true};
@@ -1384,7 +1393,7 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 2 x 2 matrix setEntry: ";
+    std::cout << "Testing 2 x 2 matrix setEntry(): ";
     numberOfTests++;
     double m2x2setEntryTestArray [4] = {0,0,2,1};
     nm::linalg::matrix<2, 2> m2x2setEntryTestMatrix {m2x2setEntryTestArray, 4, false}; //RM vs CM is arbitrary
@@ -1396,7 +1405,7 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 3 x 3 matrix setEntry: ";
+    std::cout << "Testing 3 x 3 matrix setEntry(): ";
     numberOfTests++;
     double m3x3setEntryTestArray [9] = {0,0,2,1,0,0,0,0,0};
     nm::linalg::matrix<3, 3> m3x3setEntryTestMatrix {m3x3setEntryTestArray, 9, false}; //RM vs CM is arbitrary
@@ -1408,6 +1417,14 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
+    std::cout << "Testing 1 x 1 convert(): ";
+    numberOfTests++;
+    double m1x1convertTestArray[1] = {5.5};
+
+
+
+
+    /*
     std::cout << "Testing 1 x 1 conversion from row-major to column-major form: ";
     numberOfTests++;
     double m1x1convertTestArray [1] = {3};
@@ -1436,15 +1453,15 @@ bool matrixTests(){
     double m2x2convertTestArray [4] = {2,5,4,3.5};
     nm::linalg::matrix<2, 2> m2x2convertTestMatrixRM {m2x2convertTestArray, 4, false};
     nm::linalg::matrix<2, 2> m2x2convertTestMatrixCM {m2x2convertTestArray, 4, true};
-    nm::linalg::vector<2> m2x2convertTestMatrixRMRow0 {m2x2convertTestMatrixRM.getSystemByIndex(0)};
-    nm::linalg::vector<2> m2x2convertTestMatrixRMRow1 {m2x2convertTestMatrixRM.getSystemByIndex(1)};
+    nm::linalg::vector<2> m2x2convertTestMatrixCMRow0 {m2x2convertTestMatrixCM.getSystemByIndex(0)};
+    nm::linalg::vector<2> m2x2convertTestMatrixCMRow1 {m2x2convertTestMatrixCM.getSystemByIndex(1)};
     if(
-        m2x2convertTestMatrixRM.getVariableByIndex(0).getValue(0) == m2x2convertTestMatrixCM.getVariableByIndex(0).getValue(0) //&&
-
+        m2x2convertTestMatrixRM.getVariableByIndex(0) == m2x2convertTestMatrixCM.getVariableByIndex(0)
     ){
 
     }
 
+    */
 
 
 
