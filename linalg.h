@@ -248,7 +248,11 @@ namespace nm{
              */
             double _square2Determinant(std::size_t row1, std::size_t row2, std::size_t column1, std::size_t column2) const;  //untested
 
-            void calculateDensity() const;
+
+            /*
+             *  Calculates the density of the matrix and returns it.
+             */
+            std::size_t calculateDensity() const;
 
         public:
 
@@ -273,6 +277,11 @@ namespace nm{
              *  
              */
             matrix(double* entries, std::size_t capacity, bool columnMajorOrder); 
+
+            /*
+             *  Returns the 1-based capacity of the matrix (example: 3x3 matrix returns 9).
+             */
+            std::size_t getCapacity() const;
 
             /** Low-level Operations **/
 
@@ -321,8 +330,12 @@ namespace nm{
             void convert();  //untested
 
 
-            //force converts from !columnMajorOrder to columnMajorOrder
-            void convert(bool columnMajorOrder);
+            /*
+             *  Converts from !columnMajorOrder to columnMajorOrder.
+             *  For example: if the target is row-major form (false), then this function will convert from
+             *  column-major form (true) using systems to convert to variables.
+             */
+            void convert(bool columnMajorOrderTarget);
 
             /*
              *  Checks if all entries are valid.
@@ -416,7 +429,7 @@ namespace nm{
     // 3 x 2 convert test
     // 2 x 3 convert test
     // 4 x 2 convert test
-    // checkIfValidMatrix test
+    // checkIfValidMatrix test (unnecessary because vectors already check for validity)
     // 3 x 3 isRowEmpty
     // 3 x 3 isColumnEmpty
     // 3 x 3 leadingEntryTest (use REF)

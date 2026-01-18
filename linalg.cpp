@@ -322,6 +322,35 @@ namespace nm{
             return search(row1,column1) * search(row2,column2) - search(row1,column2) * search(row2,column1);
         }
 
+        template <std::size_t M, std::size_t N> std::size_t matrix<M,N>::calculateDensity() const{
+            std::size_t density{0};
+            
+            // shamelessly stolen from print()
+            if(this->_columnMajorOrder){
+                //vector<M> _variables[N] is populated
+                //i,j for M,N => i iterates M, j iterates N
+                //since we have column vectors, we hold an i constant and iterate j
+                //once we finished j-iteration, iterate i and in turn iterate j again
+                for(std::size_t i{0}; i < M; ++i){
+                    for(std::size_t j{0}; j < N; ++j){
+                        if(isZero(this->_variables[j].getValue(i)) == false) density++;
+                    }
+                    std::cout << "\n";
+                }
+
+            }else{
+                //vector<N> _systems[M] is populated
+                //i,j for M,N => i iterates M, j iterates N
+                //since we have row vectors, we hold a j constant and iterate i
+                for(std::size_t i{0}; i < M; ++i){
+                    for(std::size_t j{0}; j < N; ++j){
+                        if(isZero(this->_systems[i].getValue(j)) == false) density++;
+                    }
+                    std::cout << "\n";
+                }
+            }
+        }
+
         //what if supplied array is changed after initialization?
         template <std::size_t M, std::size_t N> matrix<M,N>::matrix(double* entries, std::size_t capacity, bool columnMajorOrder){
             
@@ -371,6 +400,10 @@ namespace nm{
             }
 
             convert();
+        }
+
+        template <std::size_t M, std::size_t N> std::size_t matrix<M,N>::getCapacity() const{
+            return M*N;
         }
 
         template <std::size_t M, std::size_t N> double matrix<M,N>::search(std::size_t rowIndex, std::size_t columnIndex) const{
@@ -469,8 +502,12 @@ namespace nm{
             }
         }
 
-        template <std::size_t M, std::size_t N> void matrix<M, N>::convert(bool columnMajorOrder){
+        template <std::size_t M, std::size_t N> void matrix<M, N>::convert(bool columnMajorOrderTarget){
             
+            
+            
+            std::cout << "Not implemented.\n";
+            return;
         }
 
         template <std::size_t M, std::size_t N> bool matrix<M,N>::checkIfValidMatrix() const{
@@ -515,7 +552,7 @@ namespace nm{
             /*  Algorithm:
              *  First check if square matrix. If no, return false. (Square check)
              *  Check if the k,k index of the matrix is 1. If no, return false. (Diagonality check)
-             * Check if density of each row/column = 1. (Off-diagonal check)
+             *  Check if density of each row/column = 1. (Off-diagonal check)
              * 
              *  IGNORE THIS
              *  Add the rows going down (if row-major), or add the columsn going right (if column-major)
@@ -739,7 +776,6 @@ namespace nm{
     }
 }
 
-typedef nm::linalg::vector<3> v3d;
 
 bool basicTests(){
     std::size_t score {0};
@@ -839,6 +875,7 @@ bool basicTests(){
 }
 
 bool vectorTests(){
+    using namespace nm::linalg;
     std::size_t score{0};
     std::size_t numberOfTests = 0;
 
@@ -857,7 +894,7 @@ bool vectorTests(){
     std::cout << "Testing correct array size: ";
     numberOfTests++;
     try{
-        nm::linalg::vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 3};
+        vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 3};
         std::cout << "Success!";
         score++;
     }catch(std::invalid_argument message){
@@ -871,7 +908,7 @@ bool vectorTests(){
     std::cout << "Testing incorrect declared array size: ";
     numberOfTests++;
     try{
-        nm::linalg::vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 4};
+        vector<3> threeDimensionalVector{threeDimensionalVectorArray1, 4};
         std::cout << "Failure\n";
     }catch(std::invalid_argument message){
         std::cout << "Success!\n";
@@ -884,7 +921,7 @@ bool vectorTests(){
 
     std::cout << "Testing zero vector detection: ";
     numberOfTests++;
-    nm::linalg::vector<3> zeroVector {threeDimensionalZeroVectorArray, 3};
+    vector<3> zeroVector {threeDimensionalZeroVectorArray, 3};
     if(zeroVector.isZeroVector()){
         std::cout << "Success!\n";
         score++;
@@ -897,7 +934,7 @@ bool vectorTests(){
     std::cout << "Testing vector equality (for equal vectors): ";
     numberOfTests++;
     double equalTestVectorArray1[3] = {2,3,4};
-    nm::linalg::vector<3> equalTestVector1 {equalTestVectorArray1, 3};
+    vector<3> equalTestVector1 {equalTestVectorArray1, 3};
     if(equalTestVector1 == equalTestVector1){
         std::cout << "Success!\n";
         score++;
@@ -908,7 +945,7 @@ bool vectorTests(){
     std::cout << "Testing vector equality (for non-equal vectors): ";
     numberOfTests++;
     double equalTestVectorArray2[3] = {4,3,2};
-    nm::linalg::vector<3> equalTestVector2 {equalTestVectorArray2, 3};
+    vector<3> equalTestVector2 {equalTestVectorArray2, 3};
     if(equalTestVector2 == equalTestVector1){
         std::cout << "Failure\n";
     }else{
@@ -938,7 +975,7 @@ bool vectorTests(){
 
     std::cout << "Testing scalar multiplication by 0 (uses zero vector detection): ";
     numberOfTests++;
-    nm::linalg::vector<3> scalarMultiplicationTestVector {threeDimensionalVectorArray1, 3};
+    vector<3> scalarMultiplicationTestVector {threeDimensionalVectorArray1, 3};
     if((scalarMultiplicationTestVector*0).isZeroVector()){
         std::cout << "Success!\n";
         score++;
@@ -949,7 +986,7 @@ bool vectorTests(){
 
     std::cout << "Testing vector subtraction 1 (additive inverse property, uses zero vector detection): ";
     numberOfTests++;
-    nm::linalg::vector<3> additiveInverseTestVector1 {threeDimensionalVectorArray1, 3};
+    vector<3> additiveInverseTestVector1 {threeDimensionalVectorArray1, 3};
     if((additiveInverseTestVector1 - additiveInverseTestVector1).isZeroVector()){
         std::cout << "Success!\n";
         score++;
@@ -959,7 +996,7 @@ bool vectorTests(){
 
     std::cout << "Testing vector subtraction 2: ( 0 - a = -a )";
     numberOfTests++;
-    nm::linalg::vector<3> additiveInverseTestVector2 {negativeThreeDimensionalVectorArray1, 3};
+    vector<3> additiveInverseTestVector2 {negativeThreeDimensionalVectorArray1, 3};
     if((zeroVector - additiveInverseTestVector1) == additiveInverseTestVector2){
         std::cout << "Success!\n";
         score++;
@@ -969,8 +1006,8 @@ bool vectorTests(){
 
     std::cout << "Testing vector addition. (Depends on scalar multiplication by 2): ";
     numberOfTests++;
-    nm::linalg::vector<3> additiveTestVector {threeDimensionalVectorArray1, 3};
-    nm::linalg::vector<3> additiveTestVectorScaledBy2 = additiveTestVector*2;
+    vector<3> additiveTestVector {threeDimensionalVectorArray1, 3};
+    vector<3> additiveTestVectorScaledBy2 = additiveTestVector*2;
     if((additiveTestVector + additiveTestVector) == additiveTestVectorScaledBy2){
         std::cout << "Success!\n";
         score++;
@@ -982,8 +1019,8 @@ bool vectorTests(){
     numberOfTests++;
     double dotProductTestArray1[3] = {0,0,1};
     double dotProductTestArray2[3] = {1,0,0};
-    nm::linalg::vector<3> dotProductTestVector1 {dotProductTestArray1,3};
-    nm::linalg::vector<3> dotProductTestVector2 {dotProductTestArray2, 3};
+    vector<3> dotProductTestVector1 {dotProductTestArray1,3};
+    vector<3> dotProductTestVector2 {dotProductTestArray2, 3};
     if((dotProductTestVector1 * dotProductTestVector2) == 0){
         std::cout << "Success!\n";
         score++;
@@ -995,7 +1032,7 @@ bool vectorTests(){
 
     std::cout << "Testing norm (depends on dot product): ";
     numberOfTests++;
-    nm::linalg::vector<3> normTestVector {threeDimensionalVectorArray1, 3};
+    vector<3> normTestVector {threeDimensionalVectorArray1, 3};
     if(normTestVector.norm2()*normTestVector.norm2() == normTestVector*normTestVector){
         std::cout << "Success!\n";
         score++;
@@ -1007,7 +1044,7 @@ bool vectorTests(){
 
     std::cout << "Leading entry test: ";
     numberOfTests++;
-    nm::linalg::vector<3> leadingEntryValueTestVector { threeDimensionalVectorArray2, 3};
+    vector<3> leadingEntryValueTestVector { threeDimensionalVectorArray2, 3};
     if(leadingEntryValueTestVector.leadingEntry() == 4){
         std::cout << "Success!\n";
         score++;
@@ -1018,7 +1055,7 @@ bool vectorTests(){
 
     std::cout << "Leading entry index test: ";
     numberOfTests++;
-    nm::linalg::vector<3> leadingEntryValueIndexVector { threeDimensionalVectorArray2, 3};
+    vector<3> leadingEntryValueIndexVector { threeDimensionalVectorArray2, 3};
     if(leadingEntryValueIndexVector.leadingEntryIndex() == 1){
         std::cout << "Success!\n";
         score++;
@@ -1030,8 +1067,8 @@ bool vectorTests(){
     numberOfTests++;
     double setValueVectorArray1[3] = {0,2,0};
     double setValueVectorArray2[3] = {0,0,0};
-    nm::linalg::vector<3> setValueVector1 {setValueVectorArray1, 3};
-    nm::linalg::vector<3> setValueVector2 {setValueVectorArray2, 3};
+    vector<3> setValueVector1 {setValueVectorArray1, 3};
+    vector<3> setValueVector2 {setValueVectorArray2, 3};
     setValueVector2.setValue(2, 1);
     if ((setValueVector1 - setValueVector2).isZeroVector()){
         std::cout << "Success!\n";
@@ -1056,9 +1093,9 @@ bool vectorTests(){
     double getsetValuesVectorArray2[3] = {1,2,3};
     double getsetValuesVectorArray3[3] = {4,1,2};
     //this vector gets changed
-    nm::linalg::vector<3> getsetValuesVector1 {getsetValuesVectorArray1, 3};
-    nm::linalg::vector<3> getsetValuesVector2 {getsetValuesVectorArray2, 3};
-    nm::linalg::vector<3> getsetValuesVector3 {getsetValuesVectorArray3, 3};
+    vector<3> getsetValuesVector1 {getsetValuesVectorArray1, 3};
+    vector<3> getsetValuesVector2 {getsetValuesVectorArray2, 3};
+    vector<3> getsetValuesVector3 {getsetValuesVectorArray3, 3};
     std::size_t sv_offset{1};
     getsetValuesVector1.setValues(getsetValuesVectorArray2, sv_offset, 3);
 
@@ -1110,7 +1147,7 @@ bool vectorTests(){
     std::cout << "Testing get density: ";
     numberOfTests++;
     double densityArray [3] = {4,0,2};
-    nm::linalg::vector<3> getDensityTest {densityArray, 3};
+    vector<3> getDensityTest {densityArray, 3};
     if(getDensityTest.getDensity() == 2){
         std::cout << "Success!\n";
         score++;
@@ -1120,7 +1157,7 @@ bool vectorTests(){
 
     std::cout << "Testing get density normalized: ";
     numberOfTests++;
-    nm::linalg::vector<3> getDensityNormalizedTest {densityArray, 3};
+    vector<3> getDensityNormalizedTest {densityArray, 3};
     if(nm::isEqual(getDensityNormalizedTest.getDensityNormalized(),(double)2/(double)3, nm::globalTolerance)){
         std::cout << "Success!\n";
         score++;
@@ -1131,7 +1168,7 @@ bool vectorTests(){
     std::cout << "Testing get dimension: ";
     numberOfTests++;
     double dimensionTestVectorArray[6] = {0,0,0,0,0,4};
-    nm::linalg::vector<6> dimensionTestVector{dimensionTestVectorArray, 6};
+    vector<6> dimensionTestVector{dimensionTestVectorArray, 6};
     if(dimensionTestVector.dimension() == 6){
         std::cout << "Success!\n";
         score++;
@@ -1148,6 +1185,8 @@ bool vectorTests(){
 }
 
 bool matrixTests(){
+
+    using namespace nm::linalg;
     std::size_t score {0};
     std::size_t numberOfTests {0};
 
@@ -1191,7 +1230,7 @@ bool matrixTests(){
     std::cout << "Testing 1 X N matrix size: ";
     numberOfTests++;
     double m1x5Array [5] = {1,2,3,4,5};
-    nm::linalg::matrix<1, 5> m1x5 {m1x5Array, 5, false};
+    matrix<1, 5> m1x5 {m1x5Array, 5, false};
     if(m1x5.getSystemByIndex(0).dimension() == 5 && m1x5.getVariableByIndex(0).dimension() == 1){
         std::cout << "Success!\n";
         score++;
@@ -1201,7 +1240,7 @@ bool matrixTests(){
 
     std::cout << "Testing 1 x N matrix equality vs vector<N>: ";
     numberOfTests++;
-    nm::linalg::vector<5> v5 {m1x5Array, 5};
+    vector<5> v5 {m1x5Array, 5};
     if(m1x5.getSystemByIndex(0) == v5){
         std::cout << "Success!\n";
         score++;
@@ -1212,7 +1251,7 @@ bool matrixTests(){
     std::cout << "Testing M x 1 matrix size: ";
     numberOfTests++;
     double m6x1Array [6] = {3,5,4,6,5,7};
-    nm::linalg::matrix<6, 1> m6x1 {m6x1Array, 6, true};
+    matrix<6, 1> m6x1 {m6x1Array, 6, true};
     if(m6x1.getSystemByIndex(0).dimension() == 1 && m6x1.getVariableByIndex(0).dimension() == 6){
         std::cout << "Success!\n";
         score++;
@@ -1222,7 +1261,7 @@ bool matrixTests(){
 
     std::cout << "Testing M x 1 matrix equality vs vector<M>: ";
     numberOfTests++;
-    nm::linalg::vector<6> v6 {m6x1Array, 6};
+    vector<6> v6 {m6x1Array, 6};
     if(m6x1.getVariableByIndex(0) == v6){
         std::cout << "Success!\n";
         score++;
@@ -1233,21 +1272,21 @@ bool matrixTests(){
     std::cout << "Testing 2 x 2 matrix equality between column-major and row-major forms: ";
     numberOfTests++;
     double m2x2equalityTestArray [4] = {3,6,4,8};
-    nm::linalg::matrix<2, 2> m2x2equalityTestMatrixCM {m2x2equalityTestArray, 4, true};
-    nm::linalg::matrix<2, 2> m2x2equalityTestMatrixRM {m2x2equalityTestArray, 4, false};
+    matrix<2, 2> m2x2equalityTestMatrixCM {m2x2equalityTestArray, 4, true};
+    matrix<2, 2> m2x2equalityTestMatrixRM {m2x2equalityTestArray, 4, false};
     //std::cout << "\n";
     //m2x2equalityTestMatrixCM.print();
     //m2x2equalityTestMatrixRM.print();
 
-    nm::linalg::vector<2> m2x2equalityTestMatrixCMColumn0 = m2x2equalityTestMatrixCM.getVariableByIndex(0);
-    nm::linalg::vector<2> m2x2equalityTestMatrixCMColumn1 = m2x2equalityTestMatrixCM.getVariableByIndex(1);
-    nm::linalg::vector<2> m2x2equalityTestMatrixCMRow0 = m2x2equalityTestMatrixCM.getSystemByIndex(0);
-    nm::linalg::vector<2> m2x2equalityTestMatrixCMRow1 = m2x2equalityTestMatrixCM.getSystemByIndex(1);
+    vector<2> m2x2equalityTestMatrixCMColumn0 = m2x2equalityTestMatrixCM.getVariableByIndex(0);
+    vector<2> m2x2equalityTestMatrixCMColumn1 = m2x2equalityTestMatrixCM.getVariableByIndex(1);
+    vector<2> m2x2equalityTestMatrixCMRow0 = m2x2equalityTestMatrixCM.getSystemByIndex(0);
+    vector<2> m2x2equalityTestMatrixCMRow1 = m2x2equalityTestMatrixCM.getSystemByIndex(1);
 
-    nm::linalg::vector<2> m2x2equalityTestMatrixRMColumn0 = m2x2equalityTestMatrixRM.getVariableByIndex(0);
-    nm::linalg::vector<2> m2x2equalityTestMatrixRMColumn1 = m2x2equalityTestMatrixRM.getVariableByIndex(1);
-    nm::linalg::vector<2> m2x2equalityTestMatrixRMRow0 = m2x2equalityTestMatrixRM.getSystemByIndex(0);
-    nm::linalg::vector<2> m2x2equalityTestMatrixRMRow1 = m2x2equalityTestMatrixRM.getSystemByIndex(1);
+    vector<2> m2x2equalityTestMatrixRMColumn0 = m2x2equalityTestMatrixRM.getVariableByIndex(0);
+    vector<2> m2x2equalityTestMatrixRMColumn1 = m2x2equalityTestMatrixRM.getVariableByIndex(1);
+    vector<2> m2x2equalityTestMatrixRMRow0 = m2x2equalityTestMatrixRM.getSystemByIndex(0);
+    vector<2> m2x2equalityTestMatrixRMRow1 = m2x2equalityTestMatrixRM.getSystemByIndex(1);
 
     if(
         m2x2equalityTestMatrixCMColumn0 == m2x2equalityTestMatrixRMRow0 &&
@@ -1265,26 +1304,26 @@ bool matrixTests(){
     std::cout << "Testing 3 x 3 matrix equality between column-major and row-major forms: ";
     numberOfTests++;
     double m3x3equalityTestArray [9] = {2,4,3,5,4,6,5,7,6};
-    nm::linalg::matrix<3, 3> m3x3equalityTestMatrixCM {m3x3equalityTestArray, 9, true};
-    nm::linalg::matrix<3, 3> m3x3equalityTestMatrixRM {m3x3equalityTestArray, 9, false};
+    matrix<3, 3> m3x3equalityTestMatrixCM {m3x3equalityTestArray, 9, true};
+    matrix<3, 3> m3x3equalityTestMatrixRM {m3x3equalityTestArray, 9, false};
 
     //std::cout << "\n";
     //m3x3equalityTestMatrixCM.print();
     //m3x3equalityTestMatrixRM.print();
 
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMColumn0 = m3x3equalityTestMatrixCM.getVariableByIndex(0);
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMColumn1 = m3x3equalityTestMatrixCM.getVariableByIndex(1);
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMColumn2 = m3x3equalityTestMatrixCM.getVariableByIndex(2);
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMRow0 = m3x3equalityTestMatrixCM.getSystemByIndex(0);
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMRow1 = m3x3equalityTestMatrixCM.getSystemByIndex(1);
-    nm::linalg::vector<3> m3x3equalityTestMatrixCMRow2 = m3x3equalityTestMatrixCM.getSystemByIndex(2);
+    vector<3> m3x3equalityTestMatrixCMColumn0 = m3x3equalityTestMatrixCM.getVariableByIndex(0);
+    vector<3> m3x3equalityTestMatrixCMColumn1 = m3x3equalityTestMatrixCM.getVariableByIndex(1);
+    vector<3> m3x3equalityTestMatrixCMColumn2 = m3x3equalityTestMatrixCM.getVariableByIndex(2);
+    vector<3> m3x3equalityTestMatrixCMRow0 = m3x3equalityTestMatrixCM.getSystemByIndex(0);
+    vector<3> m3x3equalityTestMatrixCMRow1 = m3x3equalityTestMatrixCM.getSystemByIndex(1);
+    vector<3> m3x3equalityTestMatrixCMRow2 = m3x3equalityTestMatrixCM.getSystemByIndex(2);
 
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMColumn0 = m3x3equalityTestMatrixRM.getVariableByIndex(0);
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMColumn1 = m3x3equalityTestMatrixRM.getVariableByIndex(1);
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMColumn2 = m3x3equalityTestMatrixRM.getVariableByIndex(2);
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMRow0 = m3x3equalityTestMatrixRM.getSystemByIndex(0);
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMRow1 = m3x3equalityTestMatrixRM.getSystemByIndex(1);
-    nm::linalg::vector<3> m3x3equalityTestMatrixRMRow2 = m3x3equalityTestMatrixRM.getSystemByIndex(2);
+    vector<3> m3x3equalityTestMatrixRMColumn0 = m3x3equalityTestMatrixRM.getVariableByIndex(0);
+    vector<3> m3x3equalityTestMatrixRMColumn1 = m3x3equalityTestMatrixRM.getVariableByIndex(1);
+    vector<3> m3x3equalityTestMatrixRMColumn2 = m3x3equalityTestMatrixRM.getVariableByIndex(2);
+    vector<3> m3x3equalityTestMatrixRMRow0 = m3x3equalityTestMatrixRM.getSystemByIndex(0);
+    vector<3> m3x3equalityTestMatrixRMRow1 = m3x3equalityTestMatrixRM.getSystemByIndex(1);
+    vector<3> m3x3equalityTestMatrixRMRow2 = m3x3equalityTestMatrixRM.getSystemByIndex(2);
 
     if(
         m3x3equalityTestMatrixCMColumn0 == m3x3equalityTestMatrixRMRow0 &&
@@ -1293,6 +1332,7 @@ bool matrixTests(){
         m3x3equalityTestMatrixCMRow0 == m3x3equalityTestMatrixRMColumn0 &&
         m3x3equalityTestMatrixCMRow1 == m3x3equalityTestMatrixRMColumn1 &&
         m3x3equalityTestMatrixCMRow2 == m3x3equalityTestMatrixRMColumn2*/
+        // we DO NOT want RM columns or CM rows, those are computed by convert(); separate test
     ){
         std::cout << "Success!\n";
         score++;
@@ -1300,12 +1340,11 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-
     std::cout << "Testing 1 x N matrix density vs vector<N>: ";
     numberOfTests++;
     double m1x5densityTestArray [5] = {0,3,2,0,1};
-    nm::linalg::vector<5> m1x5densityTestVector {m1x5densityTestArray, 5};
-    nm::linalg::matrix<1, 5> m1x5densityTestMatrix {m1x5densityTestArray, 5, false};
+    vector<5> m1x5densityTestVector {m1x5densityTestArray, 5};
+    matrix<1, 5> m1x5densityTestMatrix {m1x5densityTestArray, 5, false};
     if(m1x5densityTestMatrix.getSystemByIndex(0).getDensity() == m1x5densityTestVector.getDensity() && m1x5densityTestMatrix.getSystemByIndex(0).getDensity() == 3){
         std::cout << "Success!\n";
         score++;
@@ -1316,8 +1355,8 @@ bool matrixTests(){
     std::cout << "Testing M x 1 matrix density vs vector<M>: ";
     numberOfTests++;
     double m6x1densityTestArray [6] = {0,0,1,0,3.5,8};
-    nm::linalg::vector<6> m6x1densityTestVector {m6x1densityTestArray, 6};
-    nm::linalg::matrix<6, 1> m6x1densityTestMatrix {m6x1densityTestArray, 6, true};
+    vector<6> m6x1densityTestVector {m6x1densityTestArray, 6};
+    matrix<6, 1> m6x1densityTestMatrix {m6x1densityTestArray, 6, true};
     if(m6x1densityTestMatrix.getVariableByIndex(0).getDensity() == m6x1densityTestVector.getDensity() && m6x1densityTestMatrix.getVariableByIndex(0).getDensity() == 3){
         std::cout << "Success!\n";
         score++;
@@ -1329,8 +1368,8 @@ bool matrixTests(){
     std::cout << "Testing 2 x 2 matrix density equality between row-major and column-major forms: ";
     numberOfTests++;
     double m2x2densityTestArray [4] = {0,2,3,5};
-    nm::linalg::matrix<2, 2> m2x2densityTestMatrixCM = {m2x2densityTestArray, 4, true};
-    nm::linalg::matrix<2, 2> m2x2densityTestMatrixRM = {m2x2densityTestArray, 4, false};
+    matrix<2, 2> m2x2densityTestMatrixCM = {m2x2densityTestArray, 4, true};
+    matrix<2, 2> m2x2densityTestMatrixRM = {m2x2densityTestArray, 4, false};
     if(
         m2x2densityTestMatrixCM.getSystemByIndex(0).getDensity() == m2x2densityTestMatrixRM.getVariableByIndex(0).getDensity() &&
         m2x2densityTestMatrixCM.getSystemByIndex(0).getDensity() == 1 &&
@@ -1346,8 +1385,8 @@ bool matrixTests(){
     std::cout << "Testing 3 x 3 matrix density equality between row-major and column-major forms: ";
     numberOfTests++;
     double m3x3densityTestArray [9] = {1,2,3,0,4,5,0,0,6};
-    nm::linalg::matrix<3, 3> m3x3densityTestMatrixCM = {m3x3densityTestArray, 9, true};
-    nm::linalg::matrix<3, 3> m3x3densityTestMatrixRM = {m3x3densityTestArray, 9, false};
+    matrix<3, 3> m3x3densityTestMatrixCM = {m3x3densityTestArray, 9, true};
+    matrix<3, 3> m3x3densityTestMatrixRM = {m3x3densityTestArray, 9, false};
     if(
         m3x3densityTestMatrixCM.getSystemByIndex(0).getDensity() == m3x3densityTestMatrixRM.getVariableByIndex(0).getDensity() &&
         m3x3densityTestMatrixCM.getSystemByIndex(0).getDensity() == 1 &&
@@ -1365,7 +1404,7 @@ bool matrixTests(){
     std::cout << "Testing 1 x 1 matrix search(): ";
     numberOfTests++;
     double m1x1searchTestArray [1] = {4};
-    nm::linalg::matrix<1, 1> m1x1searchTestMatrix {m1x1searchTestArray, 1, false};
+    matrix<1, 1> m1x1searchTestMatrix {m1x1searchTestArray, 1, false};
     if(m1x1searchTestMatrix.search(0, 0) == m1x1searchTestArray[0]){
         std::cout << "Success!\n";
         score++;
@@ -1376,8 +1415,8 @@ bool matrixTests(){
     std::cout << "Testing 2 x 2 matrix search() (input array vs both row-major and column-major forms): ";
     numberOfTests++;
     double m2x2searchTestArray [4] = {0,2,1,0};
-    nm::linalg::matrix<2, 2> m2x2searchTestMatrixCM {m2x2searchTestArray, 4, true};
-    nm::linalg::matrix<2, 2> m2x2searchTestMatrixRM {m2x2searchTestArray, 4, false};
+    matrix<2, 2> m2x2searchTestMatrixCM {m2x2searchTestArray, 4, true};
+    matrix<2, 2> m2x2searchTestMatrixRM {m2x2searchTestArray, 4, false};
     if(
         m2x2searchTestMatrixRM.search(0, 0) == m2x2searchTestArray[0] &&
         m2x2searchTestMatrixRM.search(0, 1) == m2x2searchTestArray[1] &&
@@ -1396,7 +1435,7 @@ bool matrixTests(){
     std::cout << "Testing 2 x 2 matrix setEntry(): ";
     numberOfTests++;
     double m2x2setEntryTestArray [4] = {0,0,2,1};
-    nm::linalg::matrix<2, 2> m2x2setEntryTestMatrix {m2x2setEntryTestArray, 4, false}; //RM vs CM is arbitrary
+    matrix<2, 2> m2x2setEntryTestMatrix {m2x2setEntryTestArray, 4, false}; //RM vs CM is arbitrary
     m2x2setEntryTestMatrix.setEntry(0, 1, 5.5);
     if(m2x2setEntryTestMatrix.search(0, 1) == 5.5){
         std::cout << "Success!\n";
@@ -1408,7 +1447,7 @@ bool matrixTests(){
     std::cout << "Testing 3 x 3 matrix setEntry(): ";
     numberOfTests++;
     double m3x3setEntryTestArray [9] = {0,0,2,1,0,0,0,0,0};
-    nm::linalg::matrix<3, 3> m3x3setEntryTestMatrix {m3x3setEntryTestArray, 9, false}; //RM vs CM is arbitrary
+    matrix<3, 3> m3x3setEntryTestMatrix {m3x3setEntryTestArray, 9, false}; //RM vs CM is arbitrary
     m2x2setEntryTestMatrix.setEntry(0, 1, 5.5);
     if(m2x2setEntryTestMatrix.search(0, 1) == 5.5){
         std::cout << "Success!\n";
@@ -1417,51 +1456,189 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 1 x 1 convert(): ";
-    numberOfTests++;
-    double m1x1convertTestArray[1] = {5.5};
+    //RM <-> systems
+    //CM <-> variables
 
-
-
-
-    /*
-    std::cout << "Testing 1 x 1 conversion from row-major to column-major form: ";
+    std::cout << "Testing 1 x 1 convert() equality between row-major and column-major forms: ";
     numberOfTests++;
     double m1x1convertTestArray [1] = {3};
-    nm::linalg::matrix<1, 1> m1x1convertTestMatrixRM {m1x1convertTestArray, 1, false};
-    nm::linalg::vector<1> m1x1convertTestMatrixRMRow0 {m1x1convertTestMatrixRM.getSystemByIndex(0)};
-    if(m1x1convertTestMatrixRM.getVariableByIndex(0) == m1x1convertTestMatrixRMRow0){
+    matrix<1, 1> m1x1convertTestMatrixRM {m1x1convertTestArray, 1, false};
+    matrix<1, 1> m1x1convertTestMatrixCM {m1x1convertTestArray, 1, true};
+    vector<1> m1x1convertTestMatrixCMRow0 {m1x1convertTestMatrixCM.getSystemByIndex(0)};
+    vector<1> m1x1convertTestMatrixRMColumn0 {m1x1convertTestMatrixRM.getVariableByIndex(0)};
+    if(m1x1convertTestMatrixRMColumn0 == m1x1convertTestMatrixCMRow0){
         std::cout << "Success!\n";
         score++;
     }else{
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 1 x 1 conversion from column-major to row-major form: ";
+    std::cout << "Testing 2 x 2 convert() equality between row-major and column-major forms: ";
     numberOfTests++;
-    nm::linalg::matrix<1, 1> m1x1convertTestMatrixCM {m1x1convertTestArray, 1, true};
-    nm::linalg::vector<1> m1x1convertTestMatrixCMRow0 {m1x1convertTestMatrixCM.getSystemByIndex(0)};
-    if(m1x1convertTestMatrixRM.getVariableByIndex(0) == m1x1convertTestMatrixCMRow0){
-        std::cout << "Success!\n";
-        score++;
-    }else{
-        std::cout << "Failure\n";
-    }
+    double m2x2convertTestArray [4] = {3,4,2,7};
+    matrix<2, 2> m2x2convertTestMatrixRM {m2x2convertTestArray, 4, false};
+    matrix<2, 2> m2x2convertTestMatrixCM {m2x2convertTestArray, 4, true};
+    //std::cout << '\n';
+    //m2x2convertTestMatrixRM.print();m2x2convertTestMatrixCM.print();
 
-    std::cout << "Testing 2 x 2 conversion from row-major to column-major form: ";
-    numberOfTests++;
-    double m2x2convertTestArray [4] = {2,5,4,3.5};
-    nm::linalg::matrix<2, 2> m2x2convertTestMatrixRM {m2x2convertTestArray, 4, false};
-    nm::linalg::matrix<2, 2> m2x2convertTestMatrixCM {m2x2convertTestArray, 4, true};
-    nm::linalg::vector<2> m2x2convertTestMatrixCMRow0 {m2x2convertTestMatrixCM.getSystemByIndex(0)};
-    nm::linalg::vector<2> m2x2convertTestMatrixCMRow1 {m2x2convertTestMatrixCM.getSystemByIndex(1)};
+    vector<2> m2x2convertTestMatrixCMRow0 {m2x2convertTestMatrixCM.getSystemByIndex(0)};
+    vector<2> m2x2convertTestMatrixCMRow1 {m2x2convertTestMatrixCM.getSystemByIndex(1)};
+    vector<2> m2x2convertTestMatrixRMColumn0 {m2x2convertTestMatrixRM.getVariableByIndex(0)};
+    vector<2> m2x2convertTestMatrixRMColumn1 {m2x2convertTestMatrixRM.getVariableByIndex(1)};
+
+    //m2x2convertTestMatrixCMRow0.print(); m2x2convertTestMatrixCMRow1.print();
+    //m2x2convertTestMatrixRMColumn0.print(); m2x2convertTestMatrixRMColumn1.print();
+
     if(
-        m2x2convertTestMatrixRM.getVariableByIndex(0) == m2x2convertTestMatrixCM.getVariableByIndex(0)
+        m2x2convertTestMatrixCMRow0 == m2x2convertTestMatrixRMColumn0 &&
+        m2x2convertTestMatrixCMRow1 == m2x2convertTestMatrixRMColumn1
     ){
-
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
     }
 
+    std::cout << "Testing 3 x 3 convert() equality between row-major and column-major forms: ";
+    numberOfTests++;
+    double m3x3convertTestArray [9] = {5.5,3.5,7.8,9.2,4.2,5,1,-5,-7.3};
+    matrix<3, 3> m3x3convertTestMatrixRM {m3x3convertTestArray, 9, false};
+    matrix<3, 3> m3x3convertTestMatrixCM {m3x3convertTestArray, 9, true};
+    //std::cout << '\n';
+    //m3x3convertTestMatrixRM.print();m3x3convertTestMatrixCM.print();
+    vector<3> m3x3convertTestMatrixCMRow0 {m3x3convertTestMatrixCM.getSystemByIndex(0)};
+    vector<3> m3x3convertTestMatrixCMRow1 {m3x3convertTestMatrixCM.getSystemByIndex(1)};
+    vector<3> m3x3convertTestMatrixCMRow2 {m3x3convertTestMatrixCM.getSystemByIndex(2)};
+    vector<3> m3x3convertTestMatrixRMColumn0 {m3x3convertTestMatrixRM.getVariableByIndex(0)};
+    vector<3> m3x3convertTestMatrixRMColumn1 {m3x3convertTestMatrixRM.getVariableByIndex(1)};
+    vector<3> m3x3convertTestMatrixRMColumn2 {m3x3convertTestMatrixRM.getVariableByIndex(2)};
+
+    //m3x3convertTestMatrixCMRow0.print(); m3x3convertTestMatrixCMRow1.print(); m3x3convertTestMatrixCMRow0.print();
+    //m3x3convertTestMatrixRMColumn0.print(); m3x3convertTestMatrixRMColumn1.print(); m3x3convertTestMatrixRMColumn2.print();
+
+    if(
+        m3x3convertTestMatrixCMRow0 == m3x3convertTestMatrixRMColumn0 &&
+        m3x3convertTestMatrixCMRow1 == m3x3convertTestMatrixRMColumn1 &&
+        m3x3convertTestMatrixCMRow2 == m3x3convertTestMatrixRMColumn2
+    ){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    //for 4x2:
+    //add vector padding and trimming
+
+
+    double m3x3isRowColumnEmptyTestArray [9] = {0,2.2,3,0,0,4.7,0,0,0};
+    matrix<3, 3> m3x3isRowColumnEmptyTestMatrix {m3x3isRowColumnEmptyTestArray, 9, false};
+    
+
+    std::cout << "Testing 3 x 3 isRowEmpty(): ";
+    numberOfTests++;
+    if(
+        m3x3isRowColumnEmptyTestMatrix.isRowEmpty(0) == false &&
+        m3x3isRowColumnEmptyTestMatrix.isRowEmpty(1) == false &&
+        m3x3isRowColumnEmptyTestMatrix.isRowEmpty(2)
+    ){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 isColumnEmpty(): ";
+    numberOfTests++;
+    if(
+        m3x3isRowColumnEmptyTestMatrix.isColumnEmpty(0) &&
+        m3x3isRowColumnEmptyTestMatrix.isColumnEmpty(1) == false &&
+        m3x3isRowColumnEmptyTestMatrix.isColumnEmpty(2) == false
+    ){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 leadingEntry() (REF): ";
+    numberOfTests++;
+    double m3x3leadingEntryREFTestArray [9] = {1,2,3,0,4,5,0,0,6};
+    matrix<3, 3> m3x3leadingEntryREFTestMatrix {m3x3leadingEntryREFTestArray, 9, false};
+    if(
+        m3x3leadingEntryREFTestMatrix.leadingEntry(0) == 1 &&
+        m3x3leadingEntryREFTestMatrix.leadingEntry(1) == 4 &&
+        m3x3leadingEntryREFTestMatrix.leadingEntry(2) == 6
+    ){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing 2 x 2 isIdentityMatrix() (given non-identity matrix): ";
+    numberOfTests++;
+    double m2x2notIdentityTestArray [4] = {3,4.5,-9,1};
+    matrix<2, 2> m2x2notIdentityTestMatrix {m2x2notIdentityTestArray, 4, false};
+    if(m2x2notIdentityTestMatrix.isIdentityMatrix() == false){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing 2 x 2 isIdentityMatrix() (given identity matrix): ";
+    numberOfTests++;
+    double m2x2identityTestArray [4] = {1,0,0,1};
+    matrix<2, 2> m2x2identityTestMatrix {m2x2identityTestArray, 4, false};
+    if(m2x2identityTestMatrix.isIdentityMatrix()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+
+    std::cout << "Testing 3 x 3 isIdentityMatrix() (given non-identity matrix): ";
+    numberOfTests++;
+    double m3x3notIdentityTestArray [9] = {3,4.5,-9,1,7.6, -10.2, 3.2, 1.3,0.4};
+    matrix<3, 3> m3x3notIdentityTestMatrix {m3x3notIdentityTestArray, 9, false};
+    if(m3x3notIdentityTestMatrix.isIdentityMatrix() == false){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing 3 x 3 isIdentityMatrix() (given identity matrix): ";
+    numberOfTests++;
+    double m3x3identityTestArray [9] = {1,0,0,0,1,0,0,0,1};
+    matrix<3, 3> m3x3identityTestMatrix {m3x3identityTestArray, 9, false};
+    if(m3x3identityTestMatrix.isIdentityMatrix()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    /*
+    std::cout << "Testing scalar multiplication: ";
+    numberOfTests++;
+    double m3x3scalarMultiplicationTestArray [9] = {4,3.4,-7.2,0.4,5,2,-1.3,9,5.3};
+    matrix<3,3> m3x3scalarMultiplicationTestMatrix {m3x3scalarMultiplicationTestArray, 9, false};
+    matrix<3,3> m3x3scalarMultiplicationTestMatrixScaled = m3x3scalarMultiplicationTestMatrix * 5;
+    for(std::size_t i {0}; i < )
     */
+    
+
+
+
+    
 
 
 
@@ -1474,12 +1651,14 @@ bool matrixTests(){
 }
 
 void ece206mobius1helper(){
+    using namespace nm::linalg;
+
     std::cout << "first 3d vector (A):\n";
     double a[3] = {0,0,0};
     std::cin >> a[0];
     std::cin >> a[1];
     std::cin >> a[2];
-    nm::linalg::vector<3> v_a {a, 3};
+    vector<3> v_a {a, 3};
     v_a.print();
 
     std::cout << "second 3d vector (B):\n";
@@ -1487,11 +1666,11 @@ void ece206mobius1helper(){
     std::cin >> b[0];
     std::cin >> b[1];
     std::cin >> b[2];
-    nm::linalg::vector<3> v_b {b, 3};
+    vector<3> v_b {b, 3};
     v_b.print();
 
 
-    v3d difference = v_b - v_a;
+    vector<3> difference = v_b - v_a;
     std::cout << "(b - a):\n";
     difference.print();
 
@@ -1503,7 +1682,7 @@ void ece206mobius1helper(){
                         -1*(std::cos(v)),
                         u};
 
-    v3d normal {n, 3};
+    vector<3> normal {n, 3};
 
 
     std::cout << "_________________________________\n" << "dot product: " << difference*normal << "\n";
