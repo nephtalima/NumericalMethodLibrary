@@ -249,11 +249,6 @@ namespace nm{
             double _square2Determinant(std::size_t row1, std::size_t row2, std::size_t column1, std::size_t column2) const;  //untested
 
 
-            /*
-             *  Calculates the density of the matrix and returns it.
-             */
-            std::size_t calculateDensity() const;
-
         public:
 
             /*
@@ -278,12 +273,20 @@ namespace nm{
              */
             matrix(double* entries, std::size_t capacity, bool columnMajorOrder); 
 
+
+
+            /** Low-level Operations **/
+
+
+            /*
+             *  Calculates the density of the matrix and returns it.
+             */
+            std::size_t calculateDensity() const;
+
             /*
              *  Returns the 1-based capacity of the matrix (example: 3x3 matrix returns 9).
              */
             std::size_t getCapacity() const;
-
-            /** Low-level Operations **/
 
             /*
              *  Returns the value located at the i-th row and j-th column.
@@ -329,7 +332,6 @@ namespace nm{
              */
             void convert();  //untested
 
-
             /*
              *  Converts from !columnMajorOrder to columnMajorOrder.
              *  For example: if the target is row-major form (false), then this function will convert from
@@ -354,6 +356,14 @@ namespace nm{
              *  Returns false if any entries are non-zero, true otherwise.
              */
             bool isColumnEmpty(std::size_t column) const;  //untested
+
+            /*
+             *  Checks if the matrix is a 0-matrix, i.e. it is all zeros.
+             */
+            bool isZeroMatrix() const;
+            
+
+
             double leadingEntry(std::size_t row) const; //untested
             bool isIdentityMatrix() const; //untested
             //bool isEmptyMatrix() const; //untested

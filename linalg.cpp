@@ -323,7 +323,7 @@ namespace nm{
         }
 
         template <std::size_t M, std::size_t N> std::size_t matrix<M,N>::calculateDensity() const{
-            std::size_t density{0};
+            /*std::size_t density{0};
             
             // shamelessly stolen from print()
             if(this->_columnMajorOrder){
@@ -333,9 +333,9 @@ namespace nm{
                 //once we finished j-iteration, iterate i and in turn iterate j again
                 for(std::size_t i{0}; i < M; ++i){
                     for(std::size_t j{0}; j < N; ++j){
-                        if(isZero(this->_variables[j].getValue(i)) == false) density++;
+                        if(nm::isZero(this->_variables[j].getValue(i)) == false) density++;
                     }
-                    std::cout << "\n";
+                    //std::cout << "\n";
                 }
 
             }else{
@@ -344,11 +344,44 @@ namespace nm{
                 //since we have row vectors, we hold a j constant and iterate i
                 for(std::size_t i{0}; i < M; ++i){
                     for(std::size_t j{0}; j < N; ++j){
-                        if(isZero(this->_systems[i].getValue(j)) == false) density++;
+                        if(nm::isZero(this->_systems[i].getValue(j)) == false) density++;
                     }
-                    std::cout << "\n";
+                    //std::cout << "\n";
                 }
             }
+
+            std::cout << "testing if vector density can be used instead of the above code:\n";
+            std::size_t densityA{0};
+            std::size_t densityB{0};
+            for(std::size_t i {0}; i < M; ++i){
+                densityA += this->_systems[i].getDensity();
+            } 
+            for(std::size_t j{0}; j < N; ++j){
+                densityB += this->_variables[j].getDensity();
+            }
+            //std::cout << "original: " << density << '\n';
+            std::cout << "alt calc (rows): " << densityA << "\n";
+            std::cout << "alt calc (columns): " << densityB << "\n";
+            */
+            
+            if(this->_columnMajorOrder){
+                //use _variables
+                std::size_t density{0};
+                for(std::size_t i {0}; i < N; ++i){
+                    density += this->_variables[N].getDensity();
+                }
+                return density;
+            }else{
+                //use _systems
+                std::size_t density{0};
+                for(std::size_t i{0}; i < M; ++i){
+                    density += this->_systems[M].getDensity();
+                }
+                return density;
+            }
+
+
+            return 0;
         }
 
         //what if supplied array is changed after initialization?
@@ -431,11 +464,13 @@ namespace nm{
                 throw std::invalid_argument("Index columnIndex must be strictly less than " + std::to_string(N));
             }
 
+            //do not replace .setValue with raw array accesses; density calculations
             if(this->_columnMajorOrder){
                 this->_variables[columnIndex].setValue(value, rowIndex);
             }else{
                 this->_systems[rowIndex].setValue(value,columnIndex);
             }
+            this->convert();
         }
 
         template <std::size_t M, std::size_t N> void matrix<M,N>::print() const{
@@ -541,6 +576,19 @@ namespace nm{
             return this->_variables[column].isZeroVector();
         }
 
+        template <std::size_t M, std::size_t N> bool matrix<M, N>::isZeroMatrix() const{
+            if(this->_columnMajorOrder){
+                for(std::size_t i{0}; i < N; ++i){
+                    if(this->_variables[i].isZeroVector() == false)return false;
+                }
+            }else{
+                for(std::size_t i{0}; i < M; ++i){
+                    if(this->_systems[i].isZeroVector() == false) return false;
+                }
+            }
+            return true;
+        }
+
         template <std::size_t M, std::size_t N> double matrix<M,N>::leadingEntry(std::size_t row) const{
             if(row >= M){
                 throw std::invalid_argument("Row specified is outside the matrix's bounds.");
@@ -611,6 +659,20 @@ namespace nm{
                     );
                 }
             }
+            return output;
+        }
+
+        template <std::size_t M, std::size_t N> matrix<M, N> matrix<M, N>::operator*(double scalar) const{
+            double outputArray[M*N]{0};
+            matrix<M,N> output{outputArray, M*N, false};
+            for(std::size_t i{0}; i < M; ++i){
+                for(std::size_t j{0}; j < N; ++j){
+                    output.setEntry(i, j, 
+                        this->search(i, j) * scalar
+                    );
+                }
+            }
+            return output;
         }
         
         template <std::size_t M, std::size_t N> template <std::size_t K> matrix<M,K> matrix<M,N>::operator*(matrix<N,K>& other) const{
@@ -638,15 +700,19 @@ namespace nm{
             matrix<N,M> transpose {this->_entries, N*M, !this->_columnMajorOrder};
             return transpose;
         }
-        
+
         template <std::size_t M, std::size_t N> bool matrix<M, N>::operator==(matrix<M, N>& other) const{
             return this->isEqual(other);
+        }
+
+        template <std::size_t M, std::size_t N> bool matrix<M, N>::operator!=(matrix<M, N>& other) const{
+            return this->isEqual(other) == false;
         }
 
         template <std::size_t M, std::size_t N> bool matrix<M, N>::isEqual(matrix<M,N>& other, double tolerance) const{
             for(std::size_t i{0}; i < M; ++i){
                 for(std::size_t j{0}; j < N; ++j){
-                    if(nm::isEqual(this->_systems[i][j], other.getSystemByIndex(i).getValue(j), tolerance) == false)return false;
+                    if(nm::isEqual(this->_systems[i].getValue(j), other.getSystemByIndex(i).getValue(j), tolerance) == false)return false;
                 }
             }
             return true;
@@ -683,7 +749,6 @@ namespace nm{
 
             this->_systems[targetRowIndex] = this->_systems[sourceRowIndex] * scalar + this->_systems[targetRowIndex];
         }
-
 
         template <std::size_t M, std::size_t N> void matrix<M,N>::gaussJordanElimination(vector<M> b) const {
 
@@ -887,7 +952,11 @@ bool vectorTests(){
     //Vector array with density of 2, with zero in the 0th position
     double threeDimensionalVectorArray2 [3] = {0 , 4, 3.5};
 
-    double negativeThreeDimensionalVectorArray1 [3] = {-1, -2.5, -6};
+    double negativeThreeDimensionalVectorArray1 [3] = {0, 0, 0};
+    for(std::size_t i {0}; i < 3; ++i){
+        negativeThreeDimensionalVectorArray1[i] = (-1)*threeDimensionalVectorArray1[i];
+    }
+
     double threeDimensionalZeroVectorArray [3] = {0,0,0};
 
 
@@ -1626,6 +1695,98 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
+    std::cout << "Testing 3 x 3 isZeroVector() (given non-zero matrix): ";
+    numberOfTests++;
+    double m3x3zeroVectorTestArray1 [9] = {0,0,0,0,0,0,0,0,1};
+    matrix<3, 3> m3x3zeroVectorTestMatrix1 {m3x3zeroVectorTestArray1, 9, false};
+    if(m3x3zeroVectorTestMatrix1.isZeroMatrix() == false){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 isZeroVector() (given zero matrix): ";
+    numberOfTests++;
+    double m3x3zeroVectorTestArray2 [9] = {0,0,0,0,0,0,0,0,0};
+    matrix<3, 3> m3x3zeroVectorTestMatrix2 {m3x3zeroVectorTestArray2, 9, false};
+    if(m3x3zeroVectorTestMatrix2.isZeroMatrix()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 matrix scalar multiplication: ";
+    numberOfTests++;
+    double m3x3scalarMultiplicationTestScalar {3};
+    double m3x3scalarMultiplicationTestArray [9] = {0,-3.5,2,9,5.4,-0.2,3,-2.79,0};
+    double m3x3scalarMultiplicationTestArrayScaled [9] = {0,0,0,0,0,0,0,0,0};
+    for(std::size_t i {0}; i < 9; ++i){
+        m3x3scalarMultiplicationTestArrayScaled[i] = m3x3scalarMultiplicationTestScalar * m3x3scalarMultiplicationTestArray[i];
+    }
+    matrix<3, 3> m3x3scalarMultiplicationTestMatrix {m3x3scalarMultiplicationTestArray, 9, false};
+    matrix<3, 3> m3x3scalarMultiplicationTestMatrixScaled {m3x3scalarMultiplicationTestArrayScaled, 9, false};
+    if(m3x3scalarMultiplicationTestMatrix * m3x3scalarMultiplicationTestScalar == m3x3scalarMultiplicationTestMatrixScaled){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 matrix addition 1 (additive inverse): ";
+    numberOfTests++;
+    double m3x3additionTest1Array [9] = {0,-9.7,0.746,4.32,3.5,-5.3,0,-1.2,0};
+    double m3x3additionTest1InverseArray [9] = {0,0,0,0,0,0,0,0,0};
+    for(std::size_t i{0}; i < 9; ++i){
+        m3x3additionTest1InverseArray[i] = (-1)*m3x3additionTest1Array[i];
+    }
+    matrix<3, 3> m3x3additionTest1Matrix{m3x3additionTest1Array, 9, false};
+    matrix<3, 3> m3x3additionTest1InverseMatrix{m3x3additionTest1InverseArray, 9, false};
+    if((m3x3additionTest1Matrix + m3x3additionTest1InverseMatrix).isZeroMatrix()){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 matrix addition 2 (depends on scalar multiplication): ";
+    numberOfTests++;
+    double m3x3additionTest2Array [9] = {1,0.79,-4.367,0,6,-4.3,1.43,2.3,-7};
+    matrix<3, 3> m3x3additionTest2Matrix {m3x3additionTest2Array, 9, false};
+    matrix<3, 3> m3x3additionTest2MatrixScaled = m3x3additionTest2Matrix * 2;
+    if(m3x3additionTest2Matrix + m3x3additionTest2Matrix == m3x3additionTest2MatrixScaled){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 matrix transpose (using convert()): ";
+    numberOfTests++;
+    double m3x3transposeTestArray [9] = {3.4,-9,0,0.793,-5.32,8,1,7.5,0};
+    matrix<3, 3> m3x3transposeTestMatrixRM {m3x3transposeTestArray, 9, false};
+    matrix<3, 3> m3x3transposeTestMatrixCM {m3x3transposeTestArray, 9, true};
+    if(~m3x3transposeTestMatrixRM == m3x3transposeTestMatrixCM){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 full matrix equality: ";
+    numberOfTests++;
+    double m3x3fullEqualityTestArray [9] = {3,-0.79,-7,5.326,3.69,0,-1,1,4.5555};
+    matrix<3, 3> m3x3fullEqualityTestMatrix{m3x3fullEqualityTestArray, 9, false};
+    if(m3x3fullEqualityTestMatrix == m3x3fullEqualityTestMatrix){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+
     /*
     std::cout << "Testing scalar multiplication: ";
     numberOfTests++;
@@ -1706,7 +1867,7 @@ int main(){
     //nm::printBitsD(1.0/0.0);
     //nm::printBitsD(1.0/(-0.0));
 
-    /*
+    
     double arrayA [12] {1,2,3,4,5,6,7,8,9,10,11,12};
     double arrayB [8] {1,2,3,4,5,6,7,8};
     nm::linalg::matrix<3, 4> A {arrayA, 12, false};
@@ -1716,14 +1877,11 @@ int main(){
     B.print();
     C.print();
 
-    B.print();
-    B.multiplyRowByScalar(0, 2);
-    B.print();
-    */
-    double arrayA1 [9] {1,2,3,4,5,6,7,8,9};
+    double arrayA1 [9] {0,0,0,4,0,6,7,8,9};
     double arrayV1 [3] {1,2,3};
     nm::linalg::matrix<3, 3> A1 {arrayA1, 9, false};
     nm::linalg::vector<3> V1 {arrayV1, 3};
+    //A1.calculateDensity();
     //A1.gaussJordanElimination(V1);
 
     
