@@ -662,6 +662,11 @@ namespace nm{
             return output;
         }
 
+        template <std::size_t M, std::size_t N> matrix<M,N> matrix<M, N>::operator-(matrix<M,N>& other) const{
+            matrix<M,N> output = other*(-1);
+            return this + output;
+        }
+
         template <std::size_t M, std::size_t N> matrix<M, N> matrix<M, N>::operator*(double scalar) const{
             double outputArray[M*N]{0};
             matrix<M,N> output{outputArray, M*N, false};
@@ -1762,7 +1767,7 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 3 x 3 matrix transpose (using convert()): ";
+    std::cout << "Testing 3 x 3 matrix transpose (using convert() and matrix equality operator): ";
     numberOfTests++;
     double m3x3transposeTestArray [9] = {3.4,-9,0,0.793,-5.32,8,1,7.5,0};
     matrix<3, 3> m3x3transposeTestMatrixRM {m3x3transposeTestArray, 9, false};
@@ -1774,11 +1779,89 @@ bool matrixTests(){
         std::cout << "Failure\n";
     }
 
-    std::cout << "Testing 3 x 3 full matrix equality: ";
+    std::cout << "Testing 3 x 3 full matrix equality (with equal matrices): ";
     numberOfTests++;
-    double m3x3fullEqualityTestArray [9] = {3,-0.79,-7,5.326,3.69,0,-1,1,4.5555};
-    matrix<3, 3> m3x3fullEqualityTestMatrix{m3x3fullEqualityTestArray, 9, false};
-    if(m3x3fullEqualityTestMatrix == m3x3fullEqualityTestMatrix){
+    double m3x3fullEqualityTest1Array [9] = {3,-0.79,-7,5.326,3.69,0,-1,1,4.5555};
+    matrix<3, 3> m3x3fullEqualityTest1Matrix{m3x3fullEqualityTest1Array, 9, false};
+    if(m3x3fullEqualityTest1Matrix == m3x3fullEqualityTest1Matrix){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 full matrix equality (with unequal matrices): ";
+    numberOfTests++;
+    double m3x3fullEqualityTest2Array [9] = {4,-5,-2,7.953,0,2.445,-8.3364,1,0};
+    matrix<3, 3> m3x3fullEqualityTest2Matrix1 {m3x3fullEqualityTest2Array, 9, false};
+    matrix<3, 3> m3x3fullEqualityTest2Matrix2 = m3x3fullEqualityTest2Matrix1*(2.76);
+    if((m3x3fullEqualityTest2Matrix1 == m3x3fullEqualityTest2Matrix2) == false){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 full matrix inequality (with equal matrices): ";
+    numberOfTests++;
+    double m3x3fullInequalityTest1Array [9] = {4,-3,-2.798,0,6,-7.8,4.420,0,-1};
+    matrix<3, 3> m3x3fullInequalityTest1Matrix {m3x3fullInequalityTest1Array, 9, false};
+    if((m3x3fullInequalityTest1Matrix != m3x3fullInequalityTest1Matrix) == false){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 full matrix inequality (with unequal matrices): ";
+    numberOfTests++;
+    double m3x3fullInequalityTest2Array [9] = {3,-2,7.4346,6.3,-5.4,0,-3.24,4.66,-1};
+    matrix<3, 3> m3x3fullInequalityTest2Matrix1 { m3x3fullInequalityTest2Array, 9, false};
+    matrix<3, 3> m3x3fullInequalityTest2Matrix2 = m3x3fullInequalityTest2Matrix1 * (-9.4);
+    if(m3x3fullInequalityTest2Matrix1 != m3x3fullInequalityTest2Matrix2){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing matrix multiplication (3 x 4 * 4 x 2) (depends on matrix equality): ";
+    numberOfTests++;
+    double m3x4matrixMultiplicationTestArray [12] {1,2,3,4,5,6,7,8,9,10,11,12};
+    double m4x2matrixMultiplicationTestArray [8] {1,2,3,4,5,6,7,8};
+    double m3x2matrixMultiplicationTestArray [6] = {50,60,114,140,178,220}; //verified
+    nm::linalg::matrix<3, 4> m3x4matrixMultiplicationTestMatrix {m3x4matrixMultiplicationTestArray, 12, false};
+    nm::linalg::matrix<4, 2> m4x2matrixMultiplicationTestMatrix {m4x2matrixMultiplicationTestArray, 8, false};
+    nm::linalg::matrix<3, 2> m3x2matrixMultiplicationTestMatrix {m3x2matrixMultiplicationTestArray, 6, false};
+    if(m3x4matrixMultiplicationTestMatrix * m4x2matrixMultiplicationTestMatrix == m3x2matrixMultiplicationTestMatrix){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+    std::cout << "Testing 3 x 3 swapRows(): ";
+    numberOfTests++;
+    double m3x3swapRowsTestArray[9] = {0,3,2,4.5,-6.2,1,0,-4,-3};
+    std::size_t rowSwapIndex1 {2};
+    std::size_t rowSwapIndex2 {0};
+    double m3x3swapRowsTestArraySwapped[9] = {0,3,2,4.5,-6.2,1,0,-4,-3};
+    std::size_t rowSwap1Position {rowSwapIndex1 * 3};
+    std::size_t rowSwap2Position {rowSwapIndex2 * 3};
+    for(std::size_t i {0}; i < 3; ++i){
+        m3x3swapRowsTestArraySwapped[i + rowSwap2Position] = m3x3swapRowsTestArray[i + rowSwap1Position];
+        m3x3swapRowsTestArraySwapped[i + rowSwap1Position] = m3x3swapRowsTestArray[i + rowSwap2Position];
+    }
+    /*
+    for(std::size_t j {0}; j < 9; ++j)std::cout << m3x3swapRowsTestArray[j] << " ";
+    std::cout << "\n";
+    for(std::size_t j {0}; j < 9; ++j)std::cout << m3x3swapRowsTestArraySwapped[j] << " ";
+    std::cout << "\n";
+    */
+    matrix<3, 3> m3x3swapRowsTestMatrix {m3x3swapRowsTestArray, 9, false};
+    matrix<3, 3> m3x3swapRowsTestMatrixSwapped {m3x3swapRowsTestArraySwapped, 9, false};
+    m3x3swapRowsTestMatrix.swapRows(0, 2);
+    if(m3x3swapRowsTestMatrix == m3x3swapRowsTestMatrixSwapped){
         std::cout << "Success!\n";
         score++;
     }else{
@@ -1786,16 +1869,48 @@ bool matrixTests(){
     }
 
 
-
-    /*
-    std::cout << "Testing scalar multiplication: ";
+    std::cout << "Testing 3 x 3 multiplyRowByScalar(): ";
     numberOfTests++;
-    double m3x3scalarMultiplicationTestArray [9] = {4,3.4,-7.2,0.4,5,2,-1.3,9,5.3};
-    matrix<3,3> m3x3scalarMultiplicationTestMatrix {m3x3scalarMultiplicationTestArray, 9, false};
-    matrix<3,3> m3x3scalarMultiplicationTestMatrixScaled = m3x3scalarMultiplicationTestMatrix * 5;
-    for(std::size_t i {0}; i < )
-    */
-    
+    double m3x3multiplyRowByScalarTestArray [9] = {5,-3.54,0.3,9,2,0,-1,-4.675,2.3};
+    double m3x3multiplyRowByScalarTestArrayMultiplied [9] = {5,-3.54,0.3,9,2,0,-1,-4.675,2.3};
+    std::size_t rowScalarMultipliedIndex {1};
+    double testScalarMultiple {-4.53};
+    for(std::size_t i{0}; i < 3; ++i){
+        std::size_t offset{3 * rowScalarMultipliedIndex};
+        m3x3multiplyRowByScalarTestArrayMultiplied[i + offset] = m3x3multiplyRowByScalarTestArray[i + offset] * testScalarMultiple;
+    }
+    matrix<3, 3> m3x3multiplyRowByScalarTestMatrix {m3x3multiplyRowByScalarTestArray, 9, false};
+    matrix<3, 3> m3x3multiplyRowByScalarTestMatrixMultiplied {m3x3multiplyRowByScalarTestArrayMultiplied, 9, false};
+    m3x3multiplyRowByScalarTestMatrix.multiplyRowByScalar(rowScalarMultipliedIndex, testScalarMultiple);
+    if(m3x3multiplyRowByScalarTestMatrix == m3x3multiplyRowByScalarTestMatrixMultiplied){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
+
+    std::cout << "Testing 3 x 3 addRow(): ";
+    numberOfTests++;
+    double m3x3addRowTestArray [9] = {0,4,-3.4,5.56,-9.542,2,-1,0,8.5};
+    double m3x3addRowTestArrayAdded [9] = {0,4,-3.4,5.56,-9.542,2,-1,0,8.5};
+    std::size_t rowAddTargetIndex {0};
+    std::size_t rowAddSourceIndex {2};
+    for(std::size_t i {0}; i < 3; ++i){
+        std::size_t offsetT = rowAddTargetIndex * 3;
+        std::size_t offsetS = rowAddSourceIndex * 3;
+        m3x3addRowTestArrayAdded[i + offsetT] = m3x3addRowTestArray[i + offsetS] + m3x3addRowTestArrayAdded[i + offsetT];
+    }
+    matrix<3, 3> m3x3addRowTestMatrix {m3x3addRowTestArray, 9, false};
+    matrix<3, 3> m3x3addRowTestMatrixAdded {m3x3addRowTestArrayAdded, 9, false};
+    m3x3addRowTestMatrix.addRow(rowAddTargetIndex, rowAddSourceIndex); //scalar is 1, no need for complication as scalar multiplication covers that case
+    if(m3x3addRowTestMatrix == m3x3addRowTestMatrixAdded){
+        std::cout << "Success!\n";
+        score++;
+    }else{
+        std::cout << "Failure\n";
+    }
+
 
 
 
@@ -1868,21 +1983,6 @@ int main(){
     //nm::printBitsD(1.0/(-0.0));
 
     
-    double arrayA [12] {1,2,3,4,5,6,7,8,9,10,11,12};
-    double arrayB [8] {1,2,3,4,5,6,7,8};
-    nm::linalg::matrix<3, 4> A {arrayA, 12, false};
-    nm::linalg::matrix<4, 2> B {arrayB, 8, false};
-    nm::linalg::matrix<3,2> C = A*B;
-    A.print();
-    B.print();
-    C.print();
-
-    double arrayA1 [9] {0,0,0,4,0,6,7,8,9};
-    double arrayV1 [3] {1,2,3};
-    nm::linalg::matrix<3, 3> A1 {arrayA1, 9, false};
-    nm::linalg::vector<3> V1 {arrayV1, 3};
-    //A1.calculateDensity();
-    //A1.gaussJordanElimination(V1);
 
     
 

@@ -363,7 +363,6 @@ namespace nm{
             bool isZeroMatrix() const;
             
 
-
             double leadingEntry(std::size_t row) const; //untested
             bool isIdentityMatrix() const; //untested
             //bool isEmptyMatrix() const; //untested
@@ -374,10 +373,11 @@ namespace nm{
             /** Basic Matrix Operations **/
 
             //by default makes row-major matrix
-            matrix<M,N> operator+(matrix<M,N>& other) const; //untested
+            matrix<M,N> operator+(matrix<M,N>& other) const;
 
+            matrix<M,N> operator-(matrix<M,N>& other) const;
 
-            matrix<M,N> operator*(double scalar) const; //untested
+            matrix<M,N> operator*(double scalar) const;
 
             /*matrix multiplication*/
             template <std::size_t K> matrix<M,K> operator*(matrix<N,K>& other) const; //untested
@@ -393,7 +393,7 @@ namespace nm{
              *  │ 1 2 │
              *  │ 3 4 │
              */
-            matrix<N,M> operator~() const; //untested
+            matrix<N,M> operator~() const;
 
 
             bool operator==(matrix<M,N>& other) const; //untested
